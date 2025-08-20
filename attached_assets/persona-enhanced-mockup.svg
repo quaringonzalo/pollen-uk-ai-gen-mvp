@@ -1,0 +1,129 @@
+<svg width="800" height="950" viewBox="0 0 800 950" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="950" fill="#f8fafc"/>
+  
+  <!-- Header -->
+  <rect x="0" y="0" width="800" height="70" fill="#1e293b"/>
+  <text x="40" y="45" font-family="system-ui, sans-serif" font-size="22" font-weight="600" fill="white">Your Ideal Candidate Profile</text>
+  
+  <!-- Main Content Card -->
+  <rect x="40" y="90" width="720" height="820" rx="16" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Hero Section with Persona Identity -->
+  <rect x="60" y="110" width="680" height="160" rx="12" fill="#f1f5f9"/>
+  
+  <!-- Avatar Icon -->
+  <circle cx="120" cy="170" r="35" fill="#3b82f6"/>
+  <text x="112" y="180" font-family="system-ui, sans-serif" font-size="20" fill="white">👤</text>
+  
+  <!-- Persona Name & Title -->
+  <text x="170" y="155" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#1e293b">The Collaborative Coordinator</text>
+  <text x="170" y="175" font-family="system-ui, sans-serif" font-size="16" font-weight="500" fill="#64748b">Marketing Coordinator Role</text>
+  
+  <!-- Persona Blurb -->
+  <rect x="170" y="185" width="520" height="60" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+  <text x="180" y="205" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#92400e">"Naturally organized and client-focused, this person brings reliability to</text>
+  <text x="180" y="220" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#92400e">fast-paced environments while maintaining the personal touch that</text>
+  <text x="180" y="235" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#92400e">builds lasting relationships."</text>
+  
+  <!-- Role Alignment Score -->
+  <rect x="530" y="110" width="180" height="65" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/>
+  <text x="550" y="130" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#15803d">Role Alignment Score</text>
+  <text x="580" y="155" font-family="system-ui, sans-serif" font-size="28" font-weight="700" fill="#15803d">94%</text>
+  <text x="560" y="170" font-family="system-ui, sans-serif" font-size="10" fill="#15803d">Based on your 6 checkpoints</text>
+  
+  <!-- Context Line -->
+  <text x="80" y="300" font-family="system-ui, sans-serif" font-size="14" fill="#64748b">Generated from your requirements: client communication, project coordination, quality focus</text>
+  
+  <!-- Top 3 Key Traits -->
+  <text x="80" y="330" font-family="system-ui, sans-serif" font-size="18" font-weight="700" fill="#1e293b">Key Strengths for This Role</text>
+  
+  <!-- Trait 1 -->
+  <rect x="80" y="350" width="200" height="85" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+  <circle cx="110" cy="375" r="12" fill="#f59e0b"/>
+  <text x="107" y="380" font-family="system-ui, sans-serif" font-size="12" fill="white">💬</text>
+  <text x="130" y="375" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#92400e">Client Relationship Builder</text>
+  <text x="90" y="395" font-family="system-ui, sans-serif" font-size="11" fill="#92400e">Naturally develops rapport while</text>
+  <text x="90" y="410" font-family="system-ui, sans-serif" font-size="11" fill="#92400e">maintaining professional boundaries</text>
+  <text x="90" y="425" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#f59e0b">From your Checkpoint 2 responses</text>
+  
+  <!-- Trait 2 -->
+  <rect x="300" y="350" width="200" height="85" rx="10" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
+  <circle cx="330" cy="375" r="12" fill="#3b82f6"/>
+  <text x="327" y="380" font-family="system-ui, sans-serif" font-size="12" fill="white">⚡</text>
+  <text x="350" y="375" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#1e40af">Proactive Communicator</text>
+  <text x="310" y="395" font-family="system-ui, sans-serif" font-size="11" fill="#1e40af">Anticipates issues and provides</text>
+  <text x="310" y="410" font-family="system-ui, sans-serif" font-size="11" fill="#1e40af">regular updates without prompting</text>
+  <text x="310" y="425" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#3b82f6">From your Checkpoint 4 scenarios</text>
+  
+  <!-- Trait 3 -->
+  <rect x="520" y="350" width="200" height="85" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/>
+  <circle cx="550" cy="375" r="12" fill="#16a34a"/>
+  <text x="547" y="380" font-family="system-ui, sans-serif" font-size="12" fill="white">🎯</text>
+  <text x="570" y="375" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#15803d">Quality-Conscious</text>
+  <text x="530" y="395" font-family="system-ui, sans-serif" font-size="11" fill="#15803d">Takes personal pride in error-free,</text>
+  <text x="530" y="410" font-family="system-ui, sans-serif" font-size="11" fill="#15803d">professional deliverables</text>
+  <text x="530" y="425" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#16a34a">From your Checkpoint 3 standards</text>
+  
+  <!-- DISC Profile Section -->
+  <text x="80" y="470" font-family="system-ui, sans-serif" font-size="18" font-weight="700" fill="#1e293b">Behavioral Profile Match</text>
+  
+  <!-- DISC Radar Chart -->
+  <circle cx="200" cy="540" r="80" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+  <circle cx="200" cy="540" r="60" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="200" cy="540" r="40" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="200" cy="540" r="20" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- DISC Labels -->
+  <text x="195" y="475" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#ef4444">Dominance</text>
+  <text x="270" y="545" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#eab308">Influence</text>
+  <text x="185" y="615" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#22c55e">Steadiness</text>
+  <text x="110" y="545" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#3b82f6">Conscientiousness</text>
+  
+  <!-- DISC Plot Points and Lines -->
+  <circle cx="200" cy="520" r="3" fill="#ef4444"/>
+  <circle cx="248" cy="540" r="3" fill="#eab308"/>
+  <circle cx="200" cy="512" r="3" fill="#22c55e"/>
+  <circle cx="164" cy="540" r="3" fill="#3b82f6"/>
+  
+  <!-- Connecting lines for radar -->
+  <path d="M 200 520 L 248 540 L 200 512 L 164 540 Z" fill="rgba(59, 130, 246, 0.1)" stroke="#3b82f6" stroke-width="2"/>
+  
+  <!-- DISC Explanations -->
+  <text x="320" y="490" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#1e293b">Perfect Behavioral Match:</text>
+  <text x="320" y="510" font-family="system-ui, sans-serif" font-size="12" fill="#22c55e">• 35% Steadiness - Builds reliable client relationships</text>
+  <text x="320" y="530" font-family="system-ui, sans-serif" font-size="12" fill="#eab308">• 30% Influence - Natural communication skills</text>
+  <text x="320" y="550" font-family="system-ui, sans-serif" font-size="12" fill="#3b82f6">• 25% Conscientiousness - Quality-focused approach</text>
+  <text x="320" y="570" font-family="system-ui, sans-serif" font-size="12" fill="#ef4444">• 10% Dominance - Collaborative team player</text>
+  
+  <!-- Persona Personality Traits -->
+  <text x="80" y="650" font-family="system-ui, sans-serif" font-size="18" font-weight="700" fill="#1e293b">The Collaborative Coordinator Mindset</text>
+  
+  <text x="80" y="675" font-family="system-ui, sans-serif" font-size="14" fill="#374151">✨ <tspan font-weight="600">Thrives on</tspan>: Building genuine connections while delivering results</text>
+  <text x="80" y="695" font-family="system-ui, sans-serif" font-size="14" fill="#374151">🎯 <tspan font-weight="600">Motivated by</tspan>: Making a positive impact through organized teamwork</text>
+  <text x="80" y="715" font-family="system-ui, sans-serif" font-size="14" fill="#374151">💡 <tspan font-weight="600">Approach</tspan>: "Let me understand your needs, then exceed expectations"</text>
+  <text x="80" y="735" font-family="system-ui, sans-serif" font-size="14" fill="#374151">🌱 <tspan font-weight="600">Growth style</tspan>: Learns through feedback and relationship building</text>
+  
+  <!-- Essential Skills Match -->
+  <text x="80" y="770" font-family="system-ui, sans-serif" font-size="18" font-weight="700" fill="#1e293b">Essential Skills & Red Flags</text>
+  
+  <!-- Skills Pills -->
+  <rect x="80" y="790" width="130" height="25" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/>
+  <text x="90" y="805" font-family="system-ui, sans-serif" font-size="11" font-weight="500" fill="#15803d">Client Relations ✓</text>
+  
+  <rect x="220" y="790" width="140" height="25" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/>
+  <text x="230" y="805" font-family="system-ui, sans-serif" font-size="11" font-weight="500" fill="#15803d">Project Coordination ✓</text>
+  
+  <rect x="370" y="790" width="120" height="25" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/>
+  <text x="380" y="805" font-family="system-ui, sans-serif" font-size="11" font-weight="500" fill="#15803d">Quality Focus ✓</text>
+  
+  <rect x="500" y="790" width="140" height="25" rx="12" fill="#fecaca" stroke="#ef4444" stroke-width="1"/>
+  <text x="510" y="805" font-family="system-ui, sans-serif" font-size="11" font-weight="500" fill="#dc2626">Avoid: Poor multitaskers</text>
+  
+  <!-- Action Buttons -->
+  <rect x="420" y="850" width="280" height="45" rx="8" fill="#3b82f6"/>
+  <text x="520" y="877" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="white">Review "Collaborative Coordinator" Challenge →</text>
+  
+  <rect x="200" y="850" width="180" height="45" rx="8" fill="white" stroke="#d1d5db" stroke-width="1"/>
+  <text x="250" y="877" font-family="system-ui, sans-serif" font-size="14" fill="#374151">← Refine Profile</text>
+</svg>

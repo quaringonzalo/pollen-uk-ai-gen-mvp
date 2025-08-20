@@ -1,0 +1,55 @@
+Replit Dev Prompt – PDF Download (Employer View)
+Objective:
+Update the PDF download functionality for the employer view so that the generated PDF is properly branded with Pollen’s identity and cleanly formatted to fit on one A4 page. The current output spans four pages with incorrect elements (e.g., a random hamburger, Replit references), which must be removed or replaced.
+
+Required Changes:
+Branding & Header:
+
+Remove all erroneous branding:
+Remove any references to Replit, default hamburger icons, or non-Pollen branding from the header.
+
+Insert Pollen Branding:
+Replace the header logo with the official Pollen logo (use the correct asset) and ensure that the header only shows Pollen’s correct name and tagline.
+
+Header Layout:
+Ensure the header is a single row with proper margins, and that it doesn’t extend beyond the bounds of the page.
+
+Content Reformatting:
+
+One A4 Page Output:
+Reorganize the content so that the entire profile preview fits neatly onto one A4 page. This may involve:
+
+Adjusting font sizes,
+
+Reducing unnecessary white space,
+
+Condensing content into multi-column or modular sections.
+
+Section Layout:
+Ensure each section (e.g., Behavioral Profile, How I Work, Work Preferences, etc.) is clearly separated using consistent spacing and borders if necessary.
+
+Margin & Padding:
+Set appropriate margins and padding to ensure content is not crowded and fits the one-page layout.
+
+Visual Consistency:
+
+Pollen Color Palette:
+Apply the Pollen brand colors (e.g., pink #E2007A, yellow #ffde59, off-black #272727) throughout the PDF. Remove any default or system styling that introduces mismatched colors.
+
+Typography:
+Ensure that fonts follow the approved guidelines (Sora for headings and Poppins for body text) and that there is a consistent hierarchy.
+
+Footer (Optional):
+Consider adding a subtle, branded footer (with Pollen’s tagline or website) that does not interfere with the content.
+
+Testing & QA:
+
+The final PDF should:
+
+Fit entirely on one A4 page,
+
+Reflect complete and correct Pollen branding,
+
+Contain no extraneous elements (Replit references, hamburger icons, etc.),
+
+Maintain readability and design consistency across all sections.

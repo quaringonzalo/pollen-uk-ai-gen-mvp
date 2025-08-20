@@ -1,0 +1,56 @@
+Great work so far — the PDF export is very close to final. To complete the job, please address the following four issues:
+
+🛠️ 1. Expand Content to Full Page Width
+The content should expand to fill the full printable width of an A4 page, while retaining a narrow margin (e.g. 16–24px on each side).
+
+This prevents unnecessary whitespace and ensures maximum use of space for a clean, professional layout.
+
+✅ Suggested fix:
+
+Remove any max-width constraints or tight wrappers (like .container { max-width: ... }) on /profile-print.
+
+Use padding: 16px or margin: auto for spacing instead.
+
+🛠️ 2. Prevent Text Overflow Inside Cards
+Some cards (like “Career Motivators”) currently allow text to spill out or touch the edge.
+
+Ensure text always wraps properly and respects inner padding.
+
+✅ Suggested fix:
+
+Add overflow-wrap: break-word; word-break: break-word; to text containers.
+
+Confirm all cards have padding: 16px–24px and box-sizing: border-box.
+
+🛠️ 3. Fix Missing Icons/Emojis
+Emojis/icons (like the profile type or section icons) are not rendering properly in the exported PDF.
+
+These may be SVGs, emoji characters, or icon fonts — Puppeteer might be missing required font or emoji rendering support.
+
+✅ Suggested fix:
+
+Ensure emojis are rendered using a supported font (like Noto Color Emoji) or are replaced with inline SVG if needed.
+
+Add --font-render-hinting=medium and --no-sandbox flags to the Puppeteer launch config if emoji rendering fails.
+
+Optionally use page.emulateMediaType('screen') to render as expected in browser.
+
+🛠️ 4. Add Loading Feedback for User
+Currently, when clicking Download PDF, there’s a long silent delay before the file appears in the browser.
+
+This creates confusion and makes it unclear whether the export is working.
+
+✅ Suggested fix:
+
+Show a temporary loading message or spinner while the request is in progress (e.g. Downloading your profile...).
+
+Disable the button or show a progress bar to reassure the user.
+
+Re-enable or update the UI once the download is triggered or fails.
+
+✅ Summary of Context
+The PDF is being generated via Puppeteer screenshot of /profile-print (please do not revert to CSS-to-PDF).
+
+Sidebar is now correctly hidden in the print view — great!
+
+These changes will polish the experience and get the export feature fully production-ready.

@@ -1,0 +1,1487 @@
+/* Print styles for profile views */
+@media print {
+  @page {
+    margin: 8mm;
+    size: A4;
+  }
+
+  /* HIGHEST PRIORITY CSS OVERRIDES */
+  
+  /* 1. FORCE USER NAME TO BE LARGE FOCAL POINT */
+  h1.text-2xl.font-bold.text-gray-900.user-name,
+  h1.user-name,
+  .user-name,
+  #profile-container h1 {
+    font-size: 24px !important;
+    font-weight: 900 !important;
+    color: #000000 !important;
+    font-family: 'Sora', sans-serif !important;
+    margin-bottom: 8px !important;
+    line-height: 1.1 !important;
+  }
+
+  /* 2. FORCE BEHAVIORAL HEADLINE TO BE PROMINENT */
+  h3.text-xl.font-bold.text-pink-800.mb-2.behavioral-headline,
+  h3.behavioral-headline,
+  .behavioral-headline,
+  .bg-gradient-to-r h3 {
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    color: #E2007A !important;
+    font-family: 'Sora', sans-serif !important;
+    margin-bottom: 6px !important;
+    line-height: 1.2 !important;
+  }
+
+  /* 3. FORCE BEHAVIORAL DESCRIPTION */
+  p.text-pink-700.text-sm.mb-3.behavioral-description,
+  p.behavioral-description,
+  .behavioral-description,
+  .bg-gradient-to-r p {
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: #6b7280 !important;
+    font-family: 'Poppins', sans-serif !important;
+    margin-bottom: 8px !important;
+    line-height: 1.3 !important;
+  }
+
+  /* 4. FORCE COLUMN SPACING */
+  .print-container.grid.lg\\:grid-cols-3,
+  .grid.lg\\:grid-cols-3 {
+    gap: 48px !important;
+    column-gap: 48px !important;
+  }
+
+  /* 5. FORCE SECTION HEADERS SMALLER WITH NO BACKGROUND */
+  h2.text-lg.font-semibold.mb-4.text-gray-900,
+  h2.text-lg.font-semibold,
+  h3.text-lg.font-semibold,
+  .profile-card h2,
+  /* Personal Insights headers like "Perfect Job Is" */
+  h4.font-semibold.text-sm.mb-2,
+  h4.font-semibold.mb-2 {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #000000 !important;
+    background: none !important;
+    background-color: transparent !important;
+    font-family: 'Sora', sans-serif !important;
+    margin-bottom: 6px !important;
+    padding: 0 !important;
+  }
+
+  /* 6. REMOVE ALL BACKGROUND SHADING EXCEPT DISC CARDS */
+  .bg-gradient-to-r.from-pink-50.to-yellow-50 {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: 1px solid #e5e7eb !important;
+    padding: 12px !important;
+  }
+
+  /* 7. KEEP DISC CARD COLORS CONSISTENT */
+  .grid.grid-cols-2.gap-4 > div:first-child .bg-red-50 {
+    background-color: #fef2f2 !important;
+    border: 1px solid #fecaca !important;
+  }
+
+  .grid.grid-cols-2.gap-4 > div:nth-child(2) .bg-yellow-50 {
+    background-color: #fefce8 !important;
+    border: 1px solid #fde68a !important;
+  }
+
+  .grid.grid-cols-2.gap-4 > div:nth-child(3) .bg-green-50 {
+    background-color: #f0fdf4 !important;
+    border: 1px solid #bbf7d0 !important;
+  }
+
+  .grid.grid-cols-2.gap-4 > div:nth-child(4) .bg-blue-50 {
+    background-color: #eff6ff !important;
+    border: 1px solid #bfdbfe !important;
+  }
+
+  /* 8. FORCE "HOW THEY WORK" SECTIONS LEFT-ALIGNED */
+  .space-y-6 > div .text-center {
+    text-align: left !important;
+  }
+
+  /* Communication Style, Decision Making Style headers */
+  .space-y-6 > div h4.font-medium.text-gray-800,
+  h4[class*="Communication Style"],
+  h4[class*="Decision Making"] {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #000000 !important;
+    font-family: 'Sora', sans-serif !important;
+    margin-bottom: 3px !important;
+  }
+
+  .space-y-6 > div p.text-sm.text-gray-600 {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: #374151 !important;
+    font-family: 'Poppins', sans-serif !important;
+    margin-bottom: 3px !important;
+  }
+
+  .space-y-6 > div p.text-sm.text-gray-700 {
+    font-size: 10px !important;
+    font-weight: 400 !important;
+    color: #6b7280 !important;
+    font-family: 'Poppins', sans-serif !important;
+    line-height: 1.3 !important;
+  }
+
+  /* 9. REMOVE HIGHLIGHTING FROM "HOW THEY WORK" CARDS */
+  .bg-yellow-50.border-yellow-100,
+  .bg-blue-50.border-blue-100,
+  .bg-green-50.border-green-100,
+  .bg-purple-50.border-purple-100 {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+  
+  .print\\:hidden {
+    display: none !important;
+  }
+  
+  .print\\:p-0 {
+    padding: 0 !important;
+  }
+  
+  .print\\:shadow-none {
+    box-shadow: none !important;
+  }
+  
+  .print\\:bg-gray-800 {
+    background-color: #1f2937 !important;
+  }
+  
+  /* Ensure charts print properly */
+  canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  
+  /* Page breaks */
+  .print\\:page-break-before {
+    page-break-before: always;
+  }
+  
+  .print\\:page-break-inside-avoid {
+    page-break-inside: avoid;
+  }
+  
+  /* Typography adjustments for print */
+  body {
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+    font-size: 8px !important;
+    line-height: 1.2 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-family: 'Poppins', sans-serif !important;
+  }
+  
+  /* Ensure background colors print */
+  * {
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+  
+  /* One-page compression styles */
+  .print\\:py-2 {
+    padding-top: 0.375rem !important;
+    padding-bottom: 0.375rem !important;
+  }
+  
+  .print\\:p-4 {
+    padding: 0.75rem !important;
+  }
+  
+  .print\\:space-y-3 > * + * {
+    margin-top: 0.5rem !important;
+  }
+  
+  .print\\:space-y-2 > * + * {
+    margin-top: 0.375rem !important;
+  }
+  
+  .print\\:gap-4 {
+    gap: 0.75rem !important;
+  }
+  
+  /* Compact headings with Pollen typography */
+  h1 {
+    font-size: 11px !important;
+    margin-bottom: 0.125rem !important;
+    line-height: 1.1 !important;
+    font-family: 'Sora', sans-serif !important;
+    font-weight: 600 !important;
+    color: #272727 !important;
+  }
+  
+  h2, .text-lg {
+    font-size: 9px !important;
+    margin-bottom: 0.125rem !important;
+    line-height: 1.1 !important;
+    font-family: 'Sora', sans-serif !important;
+    font-weight: 600 !important;
+    color: #272727 !important;
+  }
+  
+  h3, h4 {
+    font-size: 8px !important;
+    margin-bottom: 0.0625rem !important;
+    line-height: 1.1 !important;
+    font-family: 'Sora', sans-serif !important;
+    font-weight: 600 !important;
+    color: #272727 !important;
+  }
+
+  /* Specific sub-header font size reduction for "How They Work" and "Personal Insights" sections */
+  h4.font-semibold.text-blue-800,
+  h4.font-semibold.text-green-800,
+  h4.font-semibold.text-purple-800,
+  h4.font-semibold.text-orange-800,
+  .font-semibold.text-blue-800,
+  .font-semibold.text-green-800,
+  .font-semibold.text-purple-800,
+  .font-semibold.text-orange-800,
+  h4.font-semibold,
+  .bg-blue-50 h4,
+  .bg-green-50 h4,
+  .bg-purple-50 h4,
+  .bg-orange-50 h4,
+  .bg-yellow-50 h4,
+  /* Additional specific targeting for sub-headers */
+  .bg-blue-50 .font-semibold,
+  .bg-green-50 .font-semibold,
+  .bg-purple-50 .font-semibold,
+  .bg-orange-50 .font-semibold,
+  .bg-yellow-50 .font-semibold,
+  /* Target communication style, career motivators, etc. */
+  .text-blue-800.font-semibold,
+  .text-green-800.font-semibold,
+  .text-purple-800.font-semibold,
+  .text-orange-800.font-semibold,
+  .text-yellow-800.font-semibold,
+  /* Content within colored background sections */
+  [class*="bg-blue-"] .font-semibold,
+  [class*="bg-green-"] .font-semibold,
+  [class*="bg-purple-"] .font-semibold,
+  [class*="bg-orange-"] .font-semibold,
+  [class*="bg-yellow-"] .font-semibold,
+  /* Force inline font size styles to be overridden */
+  *[style*="fontSize: '5px'"],
+  *[style*="font-size: 5px"] {
+    font-size: 5px !important;
+    font-weight: 600 !important;
+    line-height: 1.1 !important;
+    margin-bottom: 0.0625rem !important;
+  }
+  
+  .text-sm {
+    font-size: 7px !important;
+  }
+  
+  .text-xs {
+    font-size: 6px !important;
+  }
+  
+  /* Ultra-compact card spacing for single page */
+  .rounded-xl, .rounded-lg {
+    padding: 0.25rem !important;
+    margin-bottom: 0.125rem !important;
+    border: 1px solid #e5e7eb !important;
+  }
+  
+  /* Ultra-compact content spacing */
+  .space-y-4 > * + * {
+    margin-top: 0.125rem !important;
+  }
+
+  /* PDF-specific purple to pink color fixes for Career Motivators */
+  .bg-purple-50 {
+    background-color: #fdf2f8 !important; /* Pink-50 equivalent */
+  }
+  
+  .border-purple-100 {
+    border-color: #fce7f3 !important; /* Pink-100 equivalent */
+  }
+  
+  .text-purple-600 {
+    color: #e11d48 !important; /* Pink-600 equivalent */
+  }
+  
+  .text-purple-900 {
+    color: #831843 !important; /* Pink-900 equivalent */
+  }
+  
+  .text-purple-800 {
+    color: #9d174d !important; /* Pink-800 equivalent */
+  }
+  
+  .text-purple-400 {
+    color: #f472b6 !important; /* Pink-400 equivalent */
+  }
+
+  /* PDF-specific orange to blue color fixes for Work Style Strengths */
+  .bg-orange-50 {
+    background-color: #eff6ff !important; /* Blue-50 equivalent */
+  }
+  
+  .border-orange-100 {
+    border-color: #dbeafe !important; /* Blue-100 equivalent */
+  }
+  
+  .text-orange-600 {
+    color: #2563eb !important; /* Blue-600 equivalent */
+  }
+  
+  .text-orange-900 {
+    color: #1e3a8a !important; /* Blue-900 equivalent */
+  }
+  
+  .text-orange-800 {
+    color: #1e40af !important; /* Blue-800 equivalent */
+  }
+  
+  .text-orange-400 {
+    color: #60a5fa !important; /* Blue-400 equivalent */
+  }
+
+  /* Enhanced Pollen branding in print header */
+  .print-header {
+    border-bottom: 2px solid #E2007A !important;
+    padding-bottom: 0.25rem !important;
+    margin-bottom: 0.375rem !important;
+  }
+  
+  .print-header h1 {
+    font-size: 12px !important;
+    color: #E2007A !important;
+    text-decoration: underline !important;
+    text-decoration-color: #E2007A !important;
+  }
+
+  /* Improved card hierarchy and spacing for PDF */
+  .profile-card {
+    border: 1px solid #d1d5db !important;
+    background-color: #ffffff !important;
+    padding: 0.375rem !important;
+    margin-bottom: 0.25rem !important;
+    border-radius: 0.25rem !important;
+  }
+
+  /* DISC percentage cards for PDF optimization */
+  .bg-red-50, .bg-yellow-50, .bg-green-50, .bg-blue-50 {
+    padding: 0.125rem !important;
+    border-width: 1px !important;
+  }
+
+  /* Community achievements badge optimization */
+  .grid-cols-2 {
+    gap: 0.125rem !important;
+  }
+
+  /* Better badge sizing for PDF */
+  .bg-blue-50, .bg-green-50, .bg-yellow-50, .bg-purple-50 {
+    padding: 0.125rem !important;
+    text-align: center !important;
+  }
+
+  .text-lg {
+    font-size: 8px !important;
+  }
+
+  /* Compact personal insights for PDF */
+  .border-gray-200 {
+    border-color: #e5e7eb !important;
+    border-width: 1px !important;
+  }
+
+  .bg-gray-50 {
+    background-color: #f9fafb !important;
+    padding: 0.25rem !important;
+  }
+
+  /* Enhanced typography hierarchy for PDF readability */
+  .font-semibold {
+    font-weight: 600 !important;
+  }
+
+  .font-medium {
+    font-weight: 500 !important;
+  }
+
+  /* PDF-specific grid optimization */
+  .grid {
+    gap: 0.25rem !important;
+  }
+
+  /* Improved reference section for PDF */
+  .border-l-4 {
+    border-left-width: 2px !important;
+    padding-left: 0.25rem !important;
+  }
+
+  /* Hide PDF-specific elements only */
+  .pdf-hidden {
+    display: none !important;
+  }
+
+  /* Hide decorative elements that clutter PDF */
+  .bg-gradient-to-r {
+    background: #fdf2f8 !important; /* Flat pink background instead of gradient */
+    border: 1px solid #fce7f3 !important;
+  }
+
+  /* Simplify visual elements for clean PDF */
+  .rounded-xl {
+    border-radius: 0.25rem !important; /* Less rounded corners for PDF */
+  }
+
+  /* Remove shadows and complex styling for clean print */
+  .shadow-md, .shadow-sm {
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb !important;
+  }
+
+  /* Hide hover states and interactive elements */
+  .hover\\:bg-gray-50 {
+    background-color: inherit !important;
+  }
+
+  /* Simplify flex layouts for PDF clarity */
+  .flex.items-center.gap-2 {
+    display: block !important;
+  }
+
+  /* Clean up spacing around removed icons */
+  .mb-3 {
+    margin-bottom: 0.125rem !important;
+  }
+
+  .mb-1 {
+    margin-bottom: 0.0625rem !important;
+  }
+
+  /* Hide unnecessary visual flourishes */
+  .border-t {
+    display: none !important;
+  }
+
+  /* Simplify DISC chart area */
+  canvas {
+    display: none !important; /* Hide interactive chart, keep percentage cards */
+  }
+
+  /* Clean badge styling without icons */
+  .bg-blue-50, .bg-green-50, .bg-yellow-50, .bg-purple-50 {
+    background-color: #f9fafb !important;
+    border: 1px solid #d1d5db !important;
+    color: #374151 !important;
+  }
+
+  /* Remove complex color schemes for clean black text */
+  .text-blue-900, .text-green-900, .text-yellow-900, .text-purple-900,
+  .text-blue-800, .text-green-800, .text-yellow-800, .text-purple-800,
+  .text-blue-700, .text-green-700, .text-yellow-700, .text-purple-700 {
+    color: #374151 !important;
+  }
+
+  /* Keep only essential brand colors */
+  .text-pink-800, .text-pink-900 {
+    color: #831843 !important;
+  }
+
+  /* Simplify complex layouts to text-only for PDF clarity */
+  .grid-cols-2 .text-center {
+    text-align: left !important;
+  }
+
+  /* Fix incomplete Personal Insights section */
+  .bg-gray-50 p {
+    display: block !important;
+    margin-bottom: 0.125rem !important;
+  }
+
+  /* Remove incomplete bullet points and improve text flow */
+  .text-gray-700::before {
+    content: "" !important;
+  }
+
+  /* Better spacing for personal insights cards */
+  .border-gray-200.bg-gray-50 {
+    margin-bottom: 0.25rem !important;
+    padding: 0.375rem !important;
+  }
+
+  /* Ensure all text content is visible and complete */
+  .text-sm.text-gray-700 {
+    overflow: visible !important;
+    text-overflow: initial !important;
+    white-space: normal !important;
+  }
+
+  /* Fix cut-off content at bottom */
+  .space-y-4 {
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Improve DISC percentage card layout */
+  .grid.grid-cols-2.gap-4 {
+    margin-bottom: 0.375rem !important;
+  }
+
+  /* Clean up community achievements section */
+  .grid.grid-cols-2.gap-2 {
+    margin-bottom: 0.25rem !important;
+  }
+
+  /* Better reference section formatting */
+  .space-y-4 > div {
+    margin-bottom: 0.25rem !important;
+  }
+
+  /* Fix text that appears cut off */
+  .leading-relaxed {
+    line-height: 1.2 !important;
+  }
+
+  /* Ensure career interests section is complete */
+  .flex.flex-wrap.gap-2 {
+    margin-bottom: 0.125rem !important;
+  }
+
+  /* Clean badge display */
+  .px-2.py-1 {
+    padding: 0.125rem 0.25rem !important;
+    margin: 0.0625rem !important;
+    background-color: #f3f4f6 !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 0.25rem !important;
+  }
+
+  /* Fix incomplete bullet points in Personal Insights */
+  h4.font-medium.text-gray-800 {
+    font-size: 8px !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.125rem !important;
+  }
+
+  /* MAJOR PDF IMPROVEMENTS */
+
+  /* 1. Large focal point user name */
+  .profile-header h1,
+  .text-3xl,
+  .text-2xl.font-bold {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #272727 !important;
+    margin-bottom: 0.25rem !important;
+    font-family: 'Sora', sans-serif !important;
+  }
+
+  /* 2. Large behavioral style headline */
+  .personality-headline {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #E2007A !important;
+    margin-bottom: 0.125rem !important;
+    font-family: 'Sora', sans-serif !important;
+  }
+
+  /* 3. Increase column spacing */
+  .grid.grid-cols-2 {
+    gap: 2rem !important;
+    column-gap: 2rem !important;
+  }
+
+  /* 4. Consistent DISC card colors */
+  .bg-red-50 {
+    background-color: #fef2f2 !important;
+    border: 1px solid #fecaca !important;
+  }
+  
+  .bg-yellow-50 {
+    background-color: #fefce8 !important;
+    border: 1px solid #fde68a !important;
+  }
+  
+  .bg-green-50 {
+    background-color: #f0fdf4 !important;
+    border: 1px solid #bbf7d0 !important;
+  }
+  
+  .bg-blue-50 {
+    background-color: #eff6ff !important;
+    border: 1px solid #bfdbfe !important;
+  }
+
+  /* 5. Bigger section headers with no background shading */
+  .section-header,
+  h2.text-lg.font-semibold,
+  h3.text-lg.font-semibold,
+  .text-lg.font-semibold {
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    color: #272727 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    padding: 0 !important;
+    margin-bottom: 0.375rem !important;
+    font-family: 'Sora', sans-serif !important;
+  }
+
+  /* Remove all background shading from headers */
+  .bg-gray-50,
+  .bg-gray-100,
+  .bg-blue-50,
+  .bg-yellow-50,
+  .bg-green-50,
+  .bg-purple-50 {
+    background-color: transparent !important;
+  }
+
+  /* Exception: Keep DISC percentage card backgrounds */
+  .disc-card.bg-red-50 {
+    background-color: #fef2f2 !important;
+  }
+  
+  .disc-card.bg-yellow-50 {
+    background-color: #fefce8 !important;
+  }
+  
+  .disc-card.bg-green-50 {
+    background-color: #f0fdf4 !important;
+  }
+  
+  .disc-card.bg-blue-50 {
+    background-color: #eff6ff !important;
+  }
+
+  /* 6. "How They Work" section formatting like Personal Insights */
+  .work-style-section {
+    background: transparent !important;
+    padding: 0 !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .work-style-title {
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    color: #272727 !important;
+    margin-bottom: 0.0625rem !important;
+    font-family: 'Sora', sans-serif !important;
+  }
+
+  .work-style-subtitle {
+    font-size: 8px !important;
+    font-weight: 600 !important;
+    color: #374151 !important;
+    margin-bottom: 0.0625rem !important;
+    font-family: 'Poppins', sans-serif !important;
+  }
+
+  .work-style-description {
+    font-size: 7px !important;
+    font-weight: 400 !important;
+    color: #6b7280 !important;
+    line-height: 1.2 !important;
+    font-family: 'Poppins', sans-serif !important;
+  }
+
+  /* Remove highlighting from all "How They Work" sections */
+  .bg-yellow-50.border-yellow-100,
+  .bg-blue-50.border-blue-100,
+  .bg-green-50.border-green-100,
+  .bg-purple-50.border-purple-100 {
+    background-color: transparent !important;
+    border: none !important;
+    padding-left: 0 !important;
+  }
+
+  /* Consistent left alignment for all work style content */
+  .text-center {
+    text-align: left !important;
+  }
+
+  /* FORCE USER NAME TO BE LARGE AND PROMINENT */
+  h1.user-name,
+  .user-name,
+  h1.text-2xl.font-bold.text-gray-900.user-name {
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    color: #272727 !important;
+    margin-bottom: 0.25rem !important;
+    font-family: 'Sora', sans-serif !important;
+    letter-spacing: -0.02em !important;
+    line-height: 1.1 !important;
+  }
+
+  /* FORCE BEHAVIORAL HEADLINE TO BE LARGE */
+  h3.behavioral-headline,
+  .behavioral-headline,
+  h3.text-xl.font-bold.text-pink-800.mb-2.behavioral-headline {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #E2007A !important;
+    margin-bottom: 0.125rem !important;
+    font-family: 'Sora', sans-serif !important;
+    line-height: 1.2 !important;
+  }
+
+  /* FORCE BEHAVIORAL DESCRIPTION */
+  p.behavioral-description,
+  .behavioral-description,
+  p.text-pink-700.text-sm.mb-3.behavioral-description {
+    font-size: 10px !important;
+    font-weight: 500 !important;
+    color: #6b7280 !important;
+    line-height: 1.3 !important;
+    margin-bottom: 0.25rem !important;
+    font-family: 'Poppins', sans-serif !important;
+  }
+
+  /* FORCE COLUMN SPACING - Override grid */
+  .print-container.grid.lg\\:grid-cols-3 {
+    column-gap: 3rem !important;
+    gap: 3rem !important;
+  }
+
+  /* FORCE SECTION HEADERS TO BE LARGE WITH NO BACKGROUND */
+  h2.text-lg.font-semibold.mb-4.text-gray-900,
+  .section-header,
+  h2.text-lg.font-semibold,
+  h3.text-lg.font-semibold {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: #272727 !important;
+    background: none !important;
+    background-color: transparent !important;
+    padding: 0 !important;
+    margin-bottom: 0.5rem !important;
+    font-family: 'Sora', sans-serif !important;
+  }
+
+  /* FORCE REMOVE ALL BACKGROUND SHADING FROM CARDS EXCEPT DISC */
+  .bg-gradient-to-r.from-pink-50.to-yellow-50,
+  .bg-yellow-50.border-yellow-100,
+  .bg-blue-50.border-blue-100,
+  .bg-green-50.border-green-100,
+  .bg-purple-50.border-purple-100 {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: 1px solid #e5e7eb !important;
+    padding: 0.5rem !important;
+  }
+
+  /* FORCE DISC CARDS TO KEEP THEIR COLORS */
+  .bg-red-50:has(.text-red-600),
+  .bg-yellow-50:has(.text-yellow-600),
+  .bg-green-50:has(.text-green-600), 
+  .bg-blue-50:has(.text-blue-600) {
+    background-color: #fef2f2 !important; /* Red */
+  }
+
+  .bg-yellow-50:has(.text-yellow-600) {
+    background-color: #fefce8 !important; /* Yellow */
+  }
+
+  .bg-green-50:has(.text-green-600) {
+    background-color: #f0fdf4 !important; /* Green */
+  }
+
+  .bg-blue-50:has(.text-blue-600) {
+    background-color: #eff6ff !important; /* Blue */
+  }
+
+  /* Alternative approach - target by position in DISC grid */
+  .grid-cols-2.gap-4 > div:nth-child(1) .bg-red-50 {
+    background-color: #fef2f2 !important;
+    border-color: #fecaca !important;
+  }
+
+  .grid-cols-2.gap-4 > div:nth-child(2) .bg-yellow-50 {
+    background-color: #fefce8 !important;
+    border-color: #fde68a !important;
+  }
+
+  .grid-cols-2.gap-4 > div:nth-child(3) .bg-green-50 {
+    background-color: #f0fdf4 !important;
+    border-color: #bbf7d0 !important;
+  }
+
+  .grid-cols-2.gap-4 > div:nth-child(4) .bg-blue-50 {
+    background-color: #eff6ff !important;
+    border-color: #bfdbfe !important;
+  }
+
+  /* FORCE "HOW THEY WORK" SECTIONS TO LEFT-ALIGN LIKE PERSONAL INSIGHTS */
+  .space-y-6 > div > div.text-center {
+    text-align: left !important;
+  }
+
+  .space-y-6 > div h4.font-medium.text-gray-800 {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: #272727 !important;
+    margin-bottom: 0.125rem !important;
+    font-family: 'Sora', sans-serif !important;
+  }
+
+  .space-y-6 > div p.text-sm.text-gray-600 {
+    font-size: 9px !important;
+    font-weight: 600 !important;
+    color: #374151 !important;
+    margin-bottom: 0.0625rem !important;
+    font-family: 'Poppins', sans-serif !important;
+  }
+
+  .space-y-6 > div p.text-sm.text-gray-700 {
+    font-size: 8px !important;
+    font-weight: 400 !important;
+    color: #6b7280 !important;
+    line-height: 1.2 !important;
+    font-family: 'Poppins', sans-serif !important;
+  }
+
+  /* NUCLEAR OPTION - FORCE ALL IMPROVEMENTS */
+  @media print {
+    /* User name must be biggest */
+    * h1,
+    * .user-name,
+    [class*="user-name"] {
+      font-size: 22px !important;
+      font-weight: 800 !important;
+      color: #272727 !important;
+      font-family: 'Sora', sans-serif !important;
+    }
+
+    /* Behavioral headline must be prominent */
+    * .behavioral-headline,
+    [class*="behavioral-headline"] {
+      font-size: 18px !important;
+      font-weight: 700 !important;
+      color: #E2007A !important;
+      font-family: 'Sora', sans-serif !important;
+    }
+
+    /* Force grid spacing */
+    .grid {
+      gap: 4rem !important;
+      column-gap: 4rem !important;
+    }
+
+    /* Force section headers */
+    h2, h3 {
+      font-size: 14px !important;
+      font-weight: 700 !important;
+      background: none !important;
+      background-color: transparent !important;
+      color: #272727 !important;
+    }
+
+    /* Remove all background colors except specific DISC cards */
+    .bg-gradient-to-r,
+    .bg-yellow-50:not([data-disc]),
+    .bg-blue-50:not([data-disc]), 
+    .bg-green-50:not([data-disc]),
+    .bg-purple-50 {
+      background: transparent !important;
+      background-color: transparent !important;
+      background-image: none !important;
+    }
+  }
+  
+  .space-y-3 > * + * {
+    margin-top: 0.0625rem !important;
+  }
+  
+  .space-y-2 > * + * {
+    margin-top: 0.0625rem !important;
+  }
+  
+  /* Ultra-compact grid for single page */
+  .grid {
+    gap: 0.125rem !important;
+  }
+  
+  .lg\\:grid-cols-3 {
+    grid-template-columns: 2fr 1fr !important;
+  }
+  
+  /* Profile avatar ultra-compact */
+  .w-20 {
+    width: 2rem !important;
+    height: 2rem !important;
+  }
+  
+  .h-20 {
+    height: 2rem !important;
+  }
+  
+  /* Ensure no page breaks and force single page */
+  * {
+    page-break-inside: avoid !important;
+  }
+  
+  .min-h-screen {
+    min-height: auto !important;
+  }
+  
+  /* Ultra-compact spacing for single page */
+  .p-6 {
+    padding: 0.1875rem !important;
+  }
+  
+  .p-4 {
+    padding: 0.125rem !important;
+  }
+  
+  .py-4 {
+    padding-top: 0.125rem !important;
+    padding-bottom: 0.125rem !important;
+  }
+  
+  .px-6 {
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+  }
+  
+  .gap-6 {
+    gap: 0.125rem !important;
+  }
+  
+  .gap-4 {
+    gap: 0.125rem !important;
+  }
+  
+  .gap-3 {
+    gap: 0.0625rem !important;
+  }
+  
+  .gap-2 {
+    gap: 0.0625rem !important;
+  }
+  
+  .mb-2, .mb-3, .mb-4 {
+    margin-bottom: 0.0625rem !important;
+  }
+  
+  .mt-2, .mt-3, .mt-4 {
+    margin-top: 0.0625rem !important;
+  }
+  
+  /* Force everything into single page view */
+  html, body {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  
+  .min-h-screen {
+    min-height: auto !important;
+    height: auto !important;
+  }
+  
+  /* Hide print header on browsers that don't support it properly */
+  @media print {
+    .print\\:block {
+      display: block !important;
+    }
+  }
+  
+  /* Ultra-compact text sizing */
+  .text-2xl {
+    font-size: 10px !important;
+    line-height: 1.1 !important;
+    font-family: 'Sora', sans-serif !important;
+    color: #272727 !important;
+  }
+  
+  .text-xl {
+    font-size: 9px !important;
+    line-height: 1.1 !important;
+    font-family: 'Sora', sans-serif !important;
+    color: #272727 !important;
+  }
+  
+  /* Force background colors to print */
+  .bg-green-100, .bg-yellow-100, .bg-blue-50, .bg-green-50, .bg-yellow-50, .bg-purple-50 {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  
+  /* Balanced compact badges */
+  .rounded-full {
+    padding: 0.125rem 0.25rem !important;
+  }
+  
+  /* OPTIMIZED SINGLE-PAGE PRINT STYLESHEET */
+  @media print {
+    /* A4 page setup with proper margins */
+    @page {
+      size: A4 portrait;
+      margin: 6mm;
+    }
+
+    /* Optimized single-page layout */
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+      font-size: 9px !important;
+      line-height: 1.2 !important;
+      background: white !important;
+      color: #000 !important;
+      height: 100vh !important;
+      width: 100% !important;
+      zoom: 0.8 !important;
+      page-break-inside: avoid !important;
+      overflow: hidden !important;
+    }
+    
+    /* Force main content container to fit on one page */
+    .print-view, #profile-container {
+      height: 100% !important;
+      max-height: 100vh !important;
+      overflow: hidden !important;
+      page-break-inside: avoid !important;
+    }
+
+    /* Basic reset for clean PDF output - prevent page breaks */
+    * {
+      box-shadow: none !important;
+      text-shadow: none !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      overflow: visible !important;
+      page-break-before: avoid !important;
+      page-break-after: avoid !important;
+      page-break-inside: avoid !important;
+      break-before: avoid !important;
+      break-after: avoid !important;
+      break-inside: avoid !important;
+    }
+
+    /* Hide navigation and UI elements not relevant to PDF */
+    nav, footer, header, .no-print, .navbar, .menu-toggle, .sidebar, .download-button, button,
+    .hamburger-menu, .replit-header, .replit-footer, .navigation, .menu-button, 
+    [role="banner"], .hamburger, .mobile-menu-button, button[aria-label*="menu" i],
+    [data-replit], .replit-ui, .print\\:hidden, .gradient-header, .sticky-header, .sticky {
+      display: none !important;
+    }
+
+    /* Enhanced Pollen branded header */
+    #profile-container::before {
+      content: "🍯 Pollen";
+      display: block;
+      font-family: 'Sora', sans-serif;
+      font-weight: bold;
+      font-size: 12pt;
+      color: #E2007A !important;
+      margin-bottom: 6pt;
+      float: left;
+      background: white !important;
+      padding: 2pt 0;
+    }
+
+    #profile-container::after {
+      content: "Candidate Profile";
+      display: block;
+      font-family: 'Sora', sans-serif;
+      font-weight: bold;
+      font-size: 14pt;
+      color: #272727 !important;
+      text-align: center;
+      margin-bottom: 12pt;
+      clear: both;
+      background: white !important;
+      border-bottom: 1px solid #E2007A;
+      padding-bottom: 4pt;
+    }
+
+    /* Professional container setup for single-page fit */
+    .profile-container, .print-container {
+      width: 100% !important;
+      padding: 6mm !important;
+      box-sizing: border-box !important;
+      display: flex !important;
+      flex-wrap: wrap !important;
+      gap: 8px !important;
+      margin: 0 !important;
+    }
+
+    /* General containers - full width for clean layout */
+    .container, .wrapper, .main-content, .profile-wrapper, .max-w-7xl, .min-h-screen, .max-w-4xl, .mx-auto {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: none !important;
+    }
+
+    /* Optimized 60:40 column layout for better balance */
+    .print-container {
+      display: grid !important;
+      grid-template-columns: 3fr 2fr !important;
+      grid-gap: 16px !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      page-break-inside: avoid !important;
+      page-break-before: avoid !important;
+      page-break-after: avoid !important;
+      break-inside: avoid !important;
+      break-before: avoid !important;
+      break-after: avoid !important;
+    }
+
+    .full-width {
+      grid-column: 1 / -1 !important;
+      width: 100% !important;
+    }
+
+    /* Enhanced card styling with subtle visual separation */
+    .card, .section, .profile-section, .profile-card, .info-block,
+    .bg-white, .rounded-xl, .shadow-md, .space-y-4, .space-y-6 {
+      break-inside: avoid !important;
+      page-break-inside: avoid !important;
+      page-break-before: avoid !important;
+      page-break-after: avoid !important;
+      padding: 12px !important;
+      margin: 0 0 16px 0 !important;
+      box-shadow: none !important;
+      border: 0.5px solid #f0f0f0 !important;
+      border-radius: 6px !important;
+      background: #fafafa !important;
+    }
+    
+    /* Remove all decorative borders */
+    .border, .border-gray-200, .border-gray-300, .border-t, .border-b {
+      border: none !important;
+    }
+
+    /* Remove grid/flex layouts for clean single-column flow */
+    .row, .columns, .grid, .lg\\:grid-cols-3, .grid-cols-2, .md\\:grid-cols-2 {
+      display: block !important;
+      width: 100% !important;
+    }
+
+    /* Make all columns full-width within sections */
+    .column, .half, .third, .profile-col, .lg\\:col-span-2, .lg\\:col-span-1 {
+      width: 100% !important;
+      display: block !important;
+      margin-bottom: 8px !important;
+    }
+
+    /* Improved typography hierarchy */
+    h1, .text-2xl {
+      font-family: 'Sora', sans-serif !important;
+      font-size: 14px !important;
+      font-weight: 700 !important;
+      color: #1a1a1a !important;
+      margin: 0 0 4px 0 !important;
+      background: white !important;
+      line-height: 1.2 !important;
+      border-bottom: 1px solid #f0f0f0 !important;
+      padding-bottom: 2px !important;
+    }
+
+    h2, .text-xl {
+      font-family: 'Sora', sans-serif !important;
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      color: #272727 !important;
+      margin: 0 0 3px 0 !important;
+      background: white !important;
+      line-height: 1.2 !important;
+    }
+
+    h3, h4, .text-lg, .font-bold {
+      font-family: 'Sora', sans-serif !important;
+      font-size: 10px !important;
+      font-weight: 600 !important;
+      color: #444 !important;
+      margin: 0 0 2px 0 !important;
+      background: white !important;
+      line-height: 1.2 !important;
+    }
+
+    p, li, span, .text-sm, .text-base, .text-gray-600, .text-gray-700 {
+      font-family: 'Poppins', sans-serif !important;
+      font-size: 9px !important;
+      line-height: 1.3 !important;
+      color: #444 !important;
+      margin: 0 0 2px 0 !important;
+      background: white !important;
+    }
+
+    /* Consistent professional badge styling */
+    .badge, .tag, .pill, .rounded-full {
+      border-radius: 4px !important;
+      padding: 3px 6px !important;
+      font-size: 8px !important;
+      display: inline-block !important;
+      margin: 2px 3px 2px 0 !important;
+      line-height: 1.1 !important;
+      font-weight: 500 !important;
+      font-family: 'Poppins', sans-serif !important;
+      border: 0.5px solid #ddd !important;
+    }
+    
+    /* Simplified badge colors for print */
+    .bg-blue-100, .bg-green-100, .bg-yellow-100, .bg-pink-100, .bg-purple-100 {
+      background-color: #f5f5f5 !important;
+      border: 0.2px solid #ddd !important;
+      color: #333 !important;
+    }
+
+    .bg-green-100, .text-green-800 {
+      background: #d1fae5 !important;
+      color: #065f46 !important;
+    }
+
+    .bg-blue-100, .text-blue-800 {
+      background: #dbeafe !important;
+      color: #1e40af !important;
+    }
+
+    .bg-yellow-100, .text-yellow-800 {
+      background: #fef3c7 !important;
+      color: #92400e !important;
+    }
+
+    .bg-purple-100, .text-purple-800 {
+      background: #e9d5ff !important;
+      color: #6b21a8 !important;
+    }
+
+    .bg-orange-100, .text-orange-800 {
+      background: #fed7aa !important;
+      color: #9a3412 !important;
+    }
+
+    .bg-teal-100, .text-teal-800 {
+      background: #ccfbf1 !important;
+      color: #115e59 !important;
+    }
+
+    .bg-pink-100, .text-pink-800 {
+      background: #fce7f3 !important;
+      color: #9d174d !important;
+    }
+
+    /* Professional avatar sizing */
+    .w-20.h-20 {
+      width: 32px !important;
+      height: 32px !important;
+      font-size: 10px !important;
+      background: #E2007A !important;
+      color: white !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-radius: 50% !important;
+    }
+
+    /* Enhanced spacing for clean design */
+    .space-y-4 > * + *, .space-y-6 > * + *, .space-y-3 > * + * {
+      margin-top: 10px !important;
+    }
+
+    .gap-6, .gap-4, .gap-3 {
+      gap: 10px !important;
+    }
+
+    .p-6, .p-4, .px-6, .py-4, .p-3 {
+      padding: 12px !important;
+    }
+
+    .mb-4, .mb-3, .mb-2, .mb-1 {
+      margin-bottom: 3px !important;
+    }
+
+    .mt-1, .mt-2, .mt-3, .mt-4 {
+      margin-top: 3px !important;
+    }
+    
+    /* Ultra-compact lists */
+    ul, ol {
+      padding-left: 4px !important;
+      margin: 0.5px 0 !important;
+    }
+    
+    li {
+      margin-bottom: 0.2px !important;
+      padding: 0 !important;
+      line-height: 1.1 !important;
+    }
+
+    /* Ensure containers don't interfere with print layout */
+    .max-w-7xl, .max-w-4xl {
+      max-width: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    /* Ensure single-page output */
+    .min-h-screen {
+      min-height: auto !important;
+    }
+
+    /* Remove URL printing for links */
+    a[href^="http"]:after {
+      content: "" !important;
+    }
+
+    /* Readable text scaling */
+    .text-2xl {
+      font-size: 14px !important;
+    }
+    
+    .text-xl {
+      font-size: 12px !important;
+    }
+
+    .text-xs {
+      font-size: 8px !important;
+    }
+
+    /* Preserve brand colors for gradients and highlights */
+    .bg-gradient-to-r {
+      background: linear-gradient(to right, #fce7f3, #fef3c7) !important;
+    }
+
+    .border-pink-200 {
+      border-color: #fbcfe8 !important;
+    }
+
+    .text-pink-800, .text-pink-700, .text-pink-600 {
+      color: #9d174d !important;
+    }
+
+    .border-green-400 {
+      border-color: #4ade80 !important;
+    }
+
+    /* Compact grid layouts */
+    .grid-cols-2 {
+      grid-template-columns: 1fr 1fr !important;
+      gap: 2px !important;
+    }
+    
+    .grid-cols-3 {
+      grid-template-columns: 1fr 1fr 1fr !important;
+      gap: 2px !important;
+    }
+    
+    /* Compact DISC chart sizing */
+    .recharts-wrapper {
+      width: 80px !important;
+      height: 50px !important;
+    }
+    
+    /* Compact header branding */
+    #profile-container::before {
+      font-size: 6pt !important;
+      margin-bottom: 1pt !important;
+    }
+
+    #profile-container::after {
+      font-size: 7pt !important;
+      margin-bottom: 1pt !important;
+    }
+    
+    /* Compact layout */
+    .flex-wrap {
+      flex-wrap: wrap !important;
+    }
+    
+    /* Compact grid spacing */
+    .grid {
+      row-gap: 1px !important;
+      column-gap: 2px !important;
+    }
+    
+    /* Cleaner section headers */
+    .text-lg.font-semibold, .text-xl.font-bold {
+      border-bottom: 0.5px solid #e5e5e5 !important;
+      padding-bottom: 2px !important;
+      margin-bottom: 4px !important;
+    }
+    
+    /* Remove excessive visual elements */
+    .shadow, .shadow-md, .shadow-lg, .shadow-xl {
+      box-shadow: none !important;
+    }
+    
+    /* Simplify complex layouts */
+    .bg-gray-50, .bg-gray-100 {
+      background-color: white !important;
+    }
+    
+    /* Professional header styling */
+    .profile-header {
+      border-bottom: 1px solid #e5e5e5 !important;
+      margin-bottom: 6px !important;
+      padding-bottom: 4px !important;
+    }
+    
+    /* Clean section dividers */
+    .section-divider {
+      border-top: 0.5px solid #f0f0f0 !important;
+      margin: 4px 0 !important;
+    }
+    
+    /* Minimize excessive icons and decorative elements */
+    .w-4, .h-4, .w-5, .h-5 {
+      display: none !important;
+    }
+    
+    /* Ultra-compact reference contact info */
+    .text-xs.text-gray-500 {
+      font-size: 5px !important;
+      line-height: 1 !important;
+      margin-top: 0.5px !important;
+    }
+    
+    /* Reset for clean layout */
+    * {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    
+    /* Override for ultra-compact spacing */
+    .card, .section, .profile-section, .profile-card, .info-block {
+      padding: 2px !important;
+      margin-bottom: 1px !important;
+    }
+    
+    /* Ultra-compact flex layouts */
+    .flex {
+      gap: 1px !important;
+    }
+    
+    /* Ultra-compact text containers */
+    .text-container, .content-block {
+      line-height: 1.1 !important;
+      margin: 0 0 0.5px 0 !important;
+    }
+
+    /* Avoid unnecessary blank pages */
+    html, body {
+      page-break-after: auto !important;
+      page-break-before: auto !important;
+    }
+
+    /* Ensure content scaling for single page */
+    .max-w-7xl {
+      max-width: none !important;
+      width: 100% !important;
+    }
+  }
+}

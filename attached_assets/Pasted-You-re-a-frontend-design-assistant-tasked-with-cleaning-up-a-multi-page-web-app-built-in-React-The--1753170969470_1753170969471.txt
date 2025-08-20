@@ -1,0 +1,43 @@
+You're a frontend design assistant tasked with cleaning up a multi-page web app built in React. The app has major issues with readability, gradient overuse, inconsistent CTA styling, and mobile responsiveness.
+
+Please complete the following site-wide cleanup tasks:
+
+1. **Remove Unnecessary Gradients**  
+   - Replace all non-essential gradients (especially on user icons, stats cards, CTA backgrounds, icon colors) with flat colors from the brand palette:  
+     - Pink: `#E2007A`  
+     - Yellow: `#ffde59`  
+     - Off Black: `#272727`  
+     - Background neutrals: very light grey `#f9f9fb` or white `#ffffff`
+
+2. **Fix Button Hierarchy + Contrast**  
+   - All primary CTAs should be pink (`#E2007A`) with white text.  
+   - Secondary CTAs should use neutral backgrounds with dark text.  
+   - Ensure font-weight is set to at least 600 on all button labels.
+
+3. **Improve Stat Cards (e.g., Community Metrics, Leaderboard, Bootcamp)**  
+   - Make all icon and label text fully legible by increasing contrast (no faded pastel colors).
+   - Avoid using pastel text on white backgrounds — instead, use dark text for labels and colored icons only if contrast is sufficient.
+   - Use a soft shadow or border-radius for hierarchy if needed, but keep background solid (not gradient).
+
+4. **Fix Leaderboard “Tier” Icons**  
+   - Remove gradient fills from icons like 🥇🥈🥉 or use solid emoji/flat SVG with strong color contrast.
+   - Assign fixed tier icon colors (Gold = #ffbd59, Silver = #d1d1d1, Bronze = #d18c5f) as solid fills with no gradient.
+
+5. **Mobile Fixes**  
+   - Ensure all text is left-aligned and doesn’t wrap awkwardly on narrow screens.  
+   - Avoid overlapping text or truncated content — ensure `min-width` and `padding` are appropriate.  
+   - Stack components vertically on mobile (cards, job listings, etc).  
+   - Fix scaling issues with buttons (e.g., they shouldn't wrap text unnaturally or overflow).
+
+6. **Flat Style User Icons**  
+   - Replace circular gradient avatars with flat background circles using brand colors, initials in bold white text, and consistent padding.
+
+7. **Ensure Typography and Spacing**  
+   - Headings: use Sora, 700 weight  
+   - Body: use Poppins, 400–500 weight  
+   - Maintain 16px base font size  
+   - Use 1.5–2rem vertical spacing between stacked elements
+
+Run this update across all pages of the site: job seeker homepage, job listings, job details, dashboard, bootcamp interest, community events, leaderboard, and saved items.
+
+Ensure consistency across both desktop and mobile versions.

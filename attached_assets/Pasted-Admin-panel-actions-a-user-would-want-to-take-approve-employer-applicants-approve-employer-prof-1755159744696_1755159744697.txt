@@ -1,0 +1,48 @@
+Admin panel - actions a user would want to take:
+approve employer applicants
+approve employer profile set up 
+message both employers and applicants
+approve a new job posted by employer
+review all applicants (both profile and task submission) for a job and approve, or edit and approve, preliminary AI generated scores for feedback to be sent back to job applicants - ideally in grid view so they can be compared side by side 
+progress a candidate for interview with Pollen (or fast track through to employer, as per notes below on nice-to-have features)
+take notes and submit interview scores for a candidate the Pollen team has interviewed - standardise the way the notes are taken with specific questions e.g. how confident did the candidate seem, how much research about the company had they done, quality of questions, etc. - the goal is to obviously get employer high quality match but also help the job seeker rather than penalise. 
+Approve a candidate the pollen team has interviewed to be sent as a match to the employer 
+Based on notes taken, approve, or edit and approve, AI-generated personalised  feedback for a job seeker not progressing post Pollen interview 
+Based on notes taken, to approve, or edit and approve, AI-generated Pollen summary of candidate to be pushed through to employer alongside candidate profile and their task submission 
+Approve job seeker review of employer before it’s published
+Keep track of employer / job status (e.g. has created profile, has made payment, has uploaded job, has issued x number of offers, etc.) - employer tracking 
+
+Automatic functions:
+
+Notifications automatically sent to employers and applicants when relevant action has taken place within admin panel 
+When a job is live an email notification automatically sent to relevant applicants and notification sent within platform  
+Reminders if interviews have not yet been set up (on both employer and job seeker side) or feedback / next step actions haven’t been taken by employer within a given timeframe
+Notifications to Pollen team of status updates beyond a candidate being shortlisted with employer - e.g interview has been booked, feedback has been sent, offer has been issued etc. 
+
+Nice-to-have Features:
+
+The ability to track a candidate’s history using the platform - e.g. what job applications they’ve done, what stage in the process they’ve got to, who they have spoken to in the pollen team and when. The idea is such that where we have already recently spoken to a candidate, we don’t need to speak to them again and fast track them straight through to the employer. 
+An API integration with Indeed and/or all major job boards with the ability to push out a job to these platforms if we want to (not automatic). 
+
+
+Views:
+
+Applicant tracking (main purpose, as above)
+- 	Needs to be very clear what key actions need to be taken so that we can operate seamlessly and effectively 
+Needs to be really easy to use and intuitive for someone inexperienced using the platform. 
+ 
+
+Applicant insights e.g. 
+How many new sign ups today and over time
+Job seeker analysis that can easily manipulated according to multiple criteria they submit in the profile completion e.g. length of time looking for a job, demographics, location, job role / industry interests, socioeconomic, etc. - something that can easily be presented to a potential employer who is interested in understanding the pool of candidates 
+Impact data e.g. how many people are getting shortlisted, getting job offers etc. - having ability to filter this by above criteria to see if outcomes are representative of wider diversity of community, are underrepresented groups seeing increased chances of being shortlisted / getting jobs through our platform 
+Individual applicant stats e.g. how many jobs they’ve applied to, progress with their scores, community engagement / proactivity score, how they’ve engaged with the platform etc. 
+Ultimately we want to prove that our methodologies improve diversity outcomes. 
+
+Employer tracking and data
+As above, keep track of their hiring insights: are there any trends, how long does it take them to carry out the process their side, might anything need to be addressed (e.g. they have diverse shortlists but tend to hire people from certain background), they take a long time to issue feedback etc. 
+
+“Super users”:
+Have ability to login as an employer and set up / edit company’s information on their behalf 
+Have ability to add new Pollen admin users and manage their access levels
+

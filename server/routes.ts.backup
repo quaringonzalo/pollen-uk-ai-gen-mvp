@@ -1,0 +1,3300 @@
+import type { Express } from "express";
+import { createServer, type Server } from "http";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import { storage } from "./storage";
+import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
+import { 
+  insertUserSchema,
+  insertJobSeekerProfileSchema,
+  insertEmployerProfileSchema,
+  insertJobSchema,
+  insertChallengeSchema,
+  insertApplicationSchema,
+  insertChallengeSubmissionSchema,
+  insertWorkflowSchema,
+  insertEmployerApplicationSchema,
+  insertOnboardingResponseSchema,
+  insertSavedCompanySchema,
+  insertEmployerFeedbackSchema,
+  insertEmployerAccountabilitySchema,
+  insertJobRestrictionSchema,
+  insertCandidateShortlistSchema,
+  insertNotificationSchema,
+  users,
+  employerFeedback,
+  employerAccountability,
+  candidateShortlists,
+  jobRestrictions,
+  notifications,
+} from "@shared/schema";
+import { ASSESSMENT_QUESTIONS, getProfileDescription, generatePersonalityInsights } from "./behavioral-assessment";
+import { calculateDiscProfile, generatePersonalityInsights as generateEnhancedInsights, ENHANCED_ASSESSMENT_QUESTIONS } from "./enhanced-behavioral-assessment";
+import { chatbotService } from './chatbot-service';
+
+// Dynamic strength generation based on DISC profile
+function generateStrengthsFromDisc(discProfile: { red: number; yellow: number; green: number; blue: number }) {
+  const strengths = [];
+  
+  // High Influence (Yellow) - People Champion characteristics
+  if (discProfile.yellow >= 50) {
+    strengths.push({
+      title: "Enthusiastic Communicator",
+      description: "You naturally energize others and excel in collaborative environments. Your communication skills make you great at building relationships and motivating teams."
+    });
+    
+    if (discProfile.red >= 20) {
+      strengths.push({
+        title: "Inspiring Team Leader", 
+        description: "You combine people skills with drive for results. You excel at rallying teams around shared goals and creating positive momentum in group projects."
+      });
+    } else {
+      strengths.push({
+        title: "Collaborative Connector",
+        description: "You have a gift for bringing people together and facilitating teamwork. You excel at creating inclusive environments where everyone feels valued and heard."
+      });
+    }
+    
+    strengths.push({
+      title: "Creative Problem Solver",
+      description: "You approach challenges with creativity and optimism, often finding innovative solutions by involving others and thinking outside the box."
+    });
+  }
+  
+  // High Dominance (Red) - Results-focused characteristics  
+  else if (discProfile.red >= 50) {
+    strengths.push({
+      title: "Results-Driven Leader",
+      description: "You have a natural ability to take charge of situations and drive towards concrete outcomes. You excel at making quick decisions and pushing projects forward efficiently."
+    });
+    
+    if (discProfile.blue >= 30) {
+      strengths.push({
+        title: "Strategic Problem Solver",
+        description: "You combine decisive action with analytical thinking. You excel at breaking down complex challenges and implementing systematic solutions."
+      });
+    } else {
+      strengths.push({
+        title: "Dynamic Change Agent",
+        description: "You thrive in fast-paced environments and excel at driving change. Your direct approach helps organizations move quickly towards their goals."
+      });
+    }
+    
+    strengths.push({
+      title: "Goal-Oriented Achiever",
+      description: "You set ambitious targets and consistently work to exceed them. Your competitive nature and focus on outcomes drives exceptional performance."
+    });
+  }
+  
+  // High Conscientiousness (Blue) - Quality-focused characteristics
+  else if (discProfile.blue >= 50) {
+    strengths.push({
+      title: "Quality & Precision Focus",
+      description: "You combine attention to detail with high standards. This makes you excellent at delivering accurate, well-researched work that meets exact specifications."
+    });
+    
+    strengths.push({
+      title: "Independent Problem Solver", 
+      description: "You work well autonomously and can systematically break down complex challenges. Your analytical approach helps you find efficient solutions to difficult problems."
+    });
+    
+    strengths.push({
+      title: "Systematic Organiser",
+      description: "You excel at creating structure and processes that improve efficiency. Your methodical approach ensures nothing falls through the cracks."
+    });
+  }
+  
+  // High Steadiness (Green) - Stability-focused characteristics
+  else if (discProfile.green >= 50) {
+    strengths.push({
+      title: "Reliable Team Player",
+      description: "You provide stability and consistency that teams can count on. Your dependable nature helps create positive, collaborative work environments."
+    });
+    
+    strengths.push({
+      title: "Patient Problem Solver",
+      description: "You approach challenges with patience and persistence. Your thoughtful, step-by-step approach ensures thorough and sustainable solutions."
+    });
+    
+    strengths.push({
+      title: "Diplomatic Communicator", 
+      description: "You excel at facilitating discussions and finding common ground. Your listening skills and empathy make her great at resolving conflicts and building consensus."
+    });
+  }
+  
+  // Balanced or mixed profiles
+  else {
+    // Blue-Red combination (Blue dominant with Red secondary)
+    if (discProfile.blue >= 40 && discProfile.red >= 30 && discProfile.blue > discProfile.red) {
+      strengths.push({
+        title: "Quality & Precision Focus",
+        description: "You combine attention to detail with high standards. This makes you excellent at delivering accurate, well-researched work that meets exact specifications."
+      });
+      
+      strengths.push({
+        title: "Systematic Problem Solver",
+        description: "You approach challenges with methodical analysis while maintaining focus on practical outcomes. Your structured thinking ensures thorough solutions."
+      });
+      
+      strengths.push({
+        title: "Independent Achiever",
+        description: "You work well autonomously and can systematically break down complex challenges. Your analytical approach helps you find efficient solutions."
+      });
+    }
+    // Red-Blue combination (Red dominant with Blue secondary)
+    else if (discProfile.red >= 40 && discProfile.blue >= 30 && discProfile.red >= discProfile.blue - 10) {
+      strengths.push({
+        title: "Results-Driven Leader",
+        description: "You have a natural ability to take charge of situations and drive towards concrete outcomes. You excel at making quick decisions and pushing projects forward efficiently."
+      });
+      
+      strengths.push({
+        title: "Quality & Precision Focus",
+        description: "You combine your drive for results with careful attention to detail and high standards. This makes you excellent at delivering quality work under pressure."
+      });
+      
+      strengths.push({
+        title: "Strategic Problem Solver",
+        description: "You combine decisive action with analytical thinking. You excel at breaking down complex challenges and implementing systematic solutions."
+      });
+    }
+    // Add other balanced combinations as needed
+    else {
+      strengths.push({
+        title: "Adaptable Collaborator",
+        description: "You bring a balanced approach to work, adapting your style to what the situation requires. Your flexibility makes you valuable in diverse team settings."
+      });
+      
+      strengths.push({
+        title: "Thoughtful Contributor",
+        description: "You consider multiple perspectives before acting. Your balanced approach helps teams make well-rounded decisions and avoid blind spots."
+      });
+      
+      strengths.push({
+        title: "Versatile Problem Solver",
+        description: "You can approach challenges from multiple angles, drawing on different strengths as needed. Your adaptability helps you succeed in various situations."
+      });
+    }
+  }
+  
+  return strengths.slice(0, 3); // Return max 3 strengths
+}
+
+
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+import { seedDatabase } from "./seed";
+import { CheckpointStorage } from "./checkpoint-storage";
+import { communityEngagement } from "./community-engagement";
+import { scoringAlgorithm } from "./scoring-algorithm";
+import { emailNotificationService } from "./email-notifications";
+import { notificationService } from "./notification-service";
+import { outcomeTrackingService } from "./outcome-tracking";
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  const checkpointStorage = new CheckpointStorage();
+  
+  // Test endpoint to verify DISC strength generation
+  app.get("/api/test-disc-strengths", (req, res) => {
+    const testProfiles = [
+      { name: "People Champion", red: 21, yellow: 67, green: 12, blue: 0 },
+      { name: "Strategic Ninja", red: 57, yellow: 0, green: 6, blue: 37 },
+      { name: "Analyst", red: 10, yellow: 5, green: 15, blue: 70 },
+      { name: "Team Player", red: 5, yellow: 15, green: 75, blue: 5 },
+      { name: "Results Driver", red: 80, yellow: 10, green: 5, blue: 5 }
+    ];
+    
+    const results = testProfiles.map(profile => ({
+      name: profile.name,
+      profile: { red: profile.red, yellow: profile.yellow, green: profile.green, blue: profile.blue },
+      strengths: generateStrengthsFromDisc(profile)
+    }));
+    
+    res.json(results);
+  });
+
+  // Health check endpoints
+  app.get("/api/health", (req, res) => {
+    res.json({ 
+      status: "healthy", 
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      memory: process.memoryUsage()
+    });
+  });
+  
+  app.get("/api/health/db", async (req, res) => {
+    try {
+      // Test database connectivity
+      await storage.getUser(1);
+      res.json({ 
+        status: "healthy", 
+        database: "connected",
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(503).json({ 
+        status: "unhealthy", 
+        database: "disconnected",
+        error: error instanceof Error ? error.message : "Unknown error",
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+  
+  app.get("/api/health/app", (req, res) => {
+    res.json({ 
+      status: "healthy", 
+      application: "running",
+      version: process.env.npm_package_version || "unknown",
+      node_version: process.version,
+      timestamp: new Date().toISOString()
+    });
+  });
+  
+  app.get("/api/health/memory", (req, res) => {
+    const memory = process.memoryUsage();
+    res.json({
+      status: "healthy",
+      memory: {
+        rss: `${Math.round(memory.rss / 1024 / 1024)}MB`,
+        heapTotal: `${Math.round(memory.heapTotal / 1024 / 1024)}MB`,
+        heapUsed: `${Math.round(memory.heapUsed / 1024 / 1024)}MB`,
+        external: `${Math.round(memory.external / 1024 / 1024)}MB`
+      },
+      timestamp: new Date().toISOString()
+    });
+  });
+  
+  // Configure multer for file uploads
+  const upload = multer({
+    storage: multer.diskStorage({
+      destination: function (req, file, cb) {
+        const uploadDir = path.join(process.cwd(), 'attached_assets');
+        if (!fs.existsSync(uploadDir)) {
+          fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        cb(null, uploadDir);
+      },
+      filename: function (req, file, cb) {
+        // Generate unique filename with timestamp
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = path.extname(file.originalname);
+        cb(null, `profile-${uniqueSuffix}${ext}`);
+      }
+    }),
+    limits: {
+      fileSize: 5 * 1024 * 1024, // 5MB limit
+    },
+    fileFilter: function (req, file, cb) {
+      // Only allow image files
+      if (file.mimetype.startsWith('image/')) {
+        cb(null, true);
+      } else {
+        cb(new Error('Only image files are allowed'));
+      }
+    }
+  });
+  
+  // Demo login endpoint for testing
+  app.post("/api/demo-login", async (req, res) => {
+    try {
+      const { role } = req.body;
+      
+      // Create or get demo user based on role
+      let demoUser = {
+        id: 1,
+        email: "zara@jobseeker.com",
+        role: "job_seeker",
+        firstName: "Zara",
+        lastName: "Williams",
+        profileImageUrl: null,
+        communityPoints: 635
+      };
+      
+      if (role === "employer") {
+        demoUser = {
+          id: 2,
+          email: "demo@employer.com", 
+          role: "employer",
+          firstName: "Demo",
+          lastName: "Employer",
+          profileImageUrl: null,
+          communityPoints: 0
+        };
+      } else if (role === "admin") {
+        demoUser = {
+          id: 3,
+          email: "demo@admin.com",
+          role: "admin", 
+          firstName: "Demo",
+          lastName: "Admin",
+          profileImageUrl: null,
+          communityPoints: 0
+        };
+      }
+      
+      // Set session user
+      (req.session as any).userId = demoUser.id;
+      (req.session as any).userRole = demoUser.role;
+      req.session.save();
+      
+      res.json({ 
+        success: true, 
+        user: {
+          id: demoUser.id,
+          role: demoUser.role,
+          firstName: demoUser.firstName,
+          lastName: demoUser.lastName,
+          email: demoUser.email
+        }
+      });
+    } catch (error) {
+      console.error("Demo login error:", error);
+      res.status(500).json({ message: "Demo login failed" });
+    }
+  });
+
+  // User profile endpoint - returns current session user
+  app.get("/api/user-profile", async (req, res) => {
+    // Force no cache to ensure fresh assessment data
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    
+    try {
+      // Check for demo session
+      const userId = (req.session as any).userId;
+      const userRole = (req.session as any).userRole;
+      
+      console.log("User profile request - Session ID:", req.sessionID);
+      console.log("Session data:", { userId, userRole });
+      
+      if (!userId) {
+        console.log("No userId in session, returning 401");
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      // Get behavioral assessment data from database if user is job seeker
+      let behavioralAssessment = null;
+      if (userRole === "job_seeker" && userId === 1) {
+        try {
+          // Get actual DISC data from database
+          const profileData = await storage.getJobSeekerProfile(userId);
+          if (profileData) {
+            const discPercentages = {
+              red: Number(profileData.discRedPercentage ?? 0),
+              yellow: Number(profileData.discYellowPercentage ?? 0), 
+              green: Number(profileData.discGreenPercentage ?? 0),
+              blue: Number(profileData.discBluePercentage ?? 0)
+            };
+
+            // Generate dynamic strengths based on actual DISC percentages
+            const strengthsDetailed = generateStrengthsFromDisc(discPercentages);
+            
+            // Generate dynamic personality insights based on actual DISC percentages  
+            const personalityInsights = generatePersonalityInsightsFromDisc(discPercentages);
+            
+            behavioralAssessment = {
+              discProfile: discPercentages,
+              personalityType: personalityInsights.overallType,
+              workStyle: personalityInsights.workstyle,
+              communicationStyle: personalityInsights.communication,
+              decisionMaking: personalityInsights.decisionmaking,
+              strengths: personalityInsights.strengths,
+              strengthsDetailed,
+              idealWorkEnvironment: personalityInsights.environment,
+              compatibleRoles: personalityInsights.roles,
+              careerMotivators: personalityInsights.motivators,
+              workStyleSummary: personalityInsights.summary,
+              idealWorkDescription: personalityInsights.description
+            };
+          }
+        } catch (error) {
+          console.error("Error generating behavioral assessment:", error);
+        }
+      }
+
+      // Return demo user data based on session with proper nested structure
+      const demoUser = {
+        id: userId,
+        role: userRole,
+        firstName: userRole === "job_seeker" ? "Zara" : userRole === "employer" ? "Demo" : "Demo",
+        lastName: userRole === "job_seeker" ? "Williams" : userRole === "employer" ? "Employer" : "Admin",
+        email: userRole === "job_seeker" ? "zara.williams@demo.com" : userRole === "employer" ? "demo@employer.com" : "demo@admin.com",
+        pronouns: userRole === "job_seeker" ? "she/her" : "they/them",
+        profileImageUrl: null, // Will show initials fallback
+        communityPoints: userRole === "job_seeker" ? 635 : 0,
+        createdAt: new Date('2024-10-15'),
+        behavioralAssessment
+      };
+
+      res.json(demoUser);
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      res.status(500).json({ message: "Failed to fetch profile" });
+    }
+  });
+
+
+
+  // Logout endpoint
+  app.post("/api/logout", (req, res) => {
+    console.log("Logout request received, session ID:", req.sessionID);
+    console.log("Current session data:", req.session);
+    
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Session destroy error:", err);
+        res.status(500).json({ message: "Logout failed" });
+      } else {
+        console.log("Session destroyed successfully");
+        // Clear session cookie
+        res.clearCookie('connect.sid');
+        res.json({ success: true });
+      }
+    });
+  });
+
+  // Seed database endpoint
+  app.get("/api/seed", async (req, res) => {
+    try {
+      const success = await seedDatabase();
+      if (success) {
+        res.json({ message: "Database seeded successfully" });
+      } else {
+        res.status(500).json({ message: "Failed to seed database" });
+      }
+    } catch (error) {
+      console.error("Seed error:", error);
+      res.status(500).json({ message: "Failed to seed database" });
+    }
+  });
+
+  // Skills Challenges routes
+  app.get("/api/challenges", async (req, res) => {
+    try {
+      const challenges = await storage.getAllChallenges();
+      res.json(challenges);
+    } catch (error) {
+      console.error("Error fetching challenges:", error);
+      res.status(500).json({ message: "Failed to fetch challenges" });
+    }
+  });
+
+  app.get("/api/challenges/:id", async (req, res) => {
+    try {
+      const challenge = await storage.getChallengeById(parseInt(req.params.id));
+      if (!challenge) {
+        return res.status(404).json({ message: "Challenge not found" });
+      }
+      res.json(challenge);
+    } catch (error) {
+      console.error("Error fetching challenge:", error);
+      res.status(500).json({ message: "Failed to fetch challenge" });
+    }
+  });
+
+  app.post("/api/challenges/submit", async (req, res) => {
+    try {
+      const submissionData = {
+        challengeId: req.body.challengeId,
+        jobSeekerId: req.body.jobSeekerId, // From user session
+        textResponse: req.body.textResponse,
+        fileUploads: req.body.fileUploads || [],
+        timeSpent: req.body.timeSpent,
+        submittedAt: new Date(),
+        status: 'submitted'
+      };
+
+      const submission = await storage.createChallengeSubmission({
+        ...submissionData,
+        applicationId: null // For standalone challenges
+      });
+
+      // For demo purposes, return the submission ID for results page
+      res.json({ 
+        id: submission.id,
+        status: 'submitted',
+        message: 'Challenge submitted successfully' 
+      });
+    } catch (error) {
+      console.error("Error submitting challenge:", error);
+      res.status(500).json({ message: "Failed to submit challenge" });
+    }
+  });
+
+  app.get("/api/challenges/submissions/:id", async (req, res) => {
+    try {
+      const submissionId = parseInt(req.params.id);
+      const submission = await storage.getChallengeSubmissionById(submissionId);
+      
+      if (!submission) {
+        return res.status(404).json({ message: "Submission not found" });
+      }
+      
+      res.json(submission);
+    } catch (error) {
+      console.error("Error fetching submission:", error);
+      res.status(500).json({ message: "Failed to fetch submission" });
+    }
+  });
+
+  // User routes
+  app.get("/api/users/:id", async (req, res) => {
+    try {
+      const user = await storage.getUser(parseInt(req.params.id));
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  app.get("/api/users/email/:email", async (req, res) => {
+    try {
+      const user = await storage.getUserByEmail(decodeURIComponent(req.params.email));
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user by email:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  app.post("/api/users", async (req, res) => {
+    try {
+      const userData = insertUserSchema.parse(req.body);
+      const user = await storage.createUser(userData);
+      res.status(201).json(user);
+    } catch (error) {
+      console.error("Error creating user:", error);
+      res.status(400).json({ message: "Invalid user data" });
+    }
+  });
+
+  app.put("/api/users/:id", async (req, res) => {
+    try {
+      const updates = insertUserSchema.partial().parse(req.body);
+      const user = await storage.updateUser(parseInt(req.params.id), updates);
+      res.json(user);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(400).json({ message: "Invalid update data" });
+    }
+  });
+
+  // Profile picture upload endpoint
+  app.post("/api/users/:id/profile-picture", upload.single('profile-picture'), async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      // Update user's profile image URL
+      const profileImageUrl = `/attached_assets/${req.file.filename}`;
+      const user = await storage.updateUser(userId, { profileImageUrl });
+      
+      res.json({ 
+        message: "Profile picture updated successfully", 
+        profileImageUrl,
+        user 
+      });
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+      res.status(500).json({ message: "Failed to upload profile picture" });
+    }
+  });
+
+  // Job Seeker Profile routes
+  app.get("/api/job-seeker-profiles/user/:userId", async (req, res) => {
+    try {
+      const profile = await storage.getJobSeekerProfile(parseInt(req.params.userId));
+      if (!profile) {
+        return res.status(404).json({ message: "Job seeker profile not found" });
+      }
+      res.json(profile);
+    } catch (error) {
+      console.error("Error fetching job seeker profile:", error);
+      res.status(500).json({ message: "Failed to fetch profile" });
+    }
+  });
+
+  app.post("/api/job-seeker-profiles", async (req, res) => {
+    try {
+      const profileData = insertJobSeekerProfileSchema.parse(req.body);
+      const profile = await storage.createJobSeekerProfile(profileData);
+      res.status(201).json(profile);
+    } catch (error) {
+      console.error("Error creating job seeker profile:", error);
+      res.status(400).json({ message: "Invalid profile data" });
+    }
+  });
+
+  app.put("/api/job-seeker-profiles/:id", async (req, res) => {
+    try {
+      const updates = insertJobSeekerProfileSchema.partial().parse(req.body);
+      const profile = await storage.updateJobSeekerProfile(parseInt(req.params.id), updates);
+      res.json(profile);
+    } catch (error) {
+      console.error("Error updating job seeker profile:", error);
+      res.status(400).json({ message: "Invalid update data" });
+    }
+  });
+
+  // Employer Profile routes
+  app.get("/api/employer-profiles/user/:userId", async (req, res) => {
+    try {
+      const profile = await storage.getEmployerProfile(parseInt(req.params.userId));
+      if (!profile) {
+        return res.status(404).json({ message: "Employer profile not found" });
+      }
+      res.json(profile);
+    } catch (error) {
+      console.error("Error fetching employer profile:", error);
+      res.status(500).json({ message: "Failed to fetch profile" });
+    }
+  });
+
+  app.post("/api/employer-profiles", async (req, res) => {
+    try {
+      const profileData = insertEmployerProfileSchema.parse(req.body);
+      const profile = await storage.createEmployerProfile(profileData);
+      res.status(201).json(profile);
+    } catch (error) {
+      console.error("Error creating employer profile:", error);
+      res.status(400).json({ message: "Invalid profile data" });
+    }
+  });
+
+  // Save employer profile (draft or complete)
+  app.post("/api/employer-profile/save", async (req, res) => {
+    try {
+      const { profileData, step, isComplete } = req.body;
+      
+      // In a real implementation, you would save to database
+      // For demo purposes, we'll just return success
+      console.log("Saving profile:", { step, isComplete, companyName: profileData?.companyName });
+      
+      res.json({ 
+        success: true, 
+        message: isComplete ? "Profile completed" : "Progress saved",
+        step,
+        profileId: 1 // Demo profile ID
+      });
+    } catch (error) {
+      console.error("Error saving employer profile:", error);
+      res.status(400).json({ message: "Failed to save profile" });
+    }
+  });
+
+  // Get saved employer profile
+  app.get("/api/employer-profile/saved", async (req, res) => {
+    try {
+      // Mock saved profile data for demo
+      const savedProfile = {
+        id: 1,
+        userId: 2,
+        profileData: {},
+        step: 1,
+        isComplete: false,
+        lastSaved: new Date().toISOString()
+      };
+      
+      res.json(savedProfile);
+    } catch (error) {
+      console.error("Error fetching saved profile:", error);
+      res.status(500).json({ message: "Failed to fetch saved profile" });
+    }
+  });
+
+  // Add alias for singular endpoint to match frontend
+  app.post("/api/employer-profile", async (req, res) => {
+    try {
+      // For demo purposes, ignore input and use pre-populated demo data
+      const demoProfileData = {
+        userId: 1,
+        companyName: "TechFlow Solutions",
+        industry: "Technology",
+        companySize: "51-200 employees",
+        location: "London, UK",
+        website: "https://techflowsolutions.co.uk",
+        about: "TechFlow Solutions is a leading technology consultancy specializing in digital transformation and cloud solutions. We help businesses modernize their operations through innovative technology implementations.",
+        mission: "To empower businesses through cutting-edge technology solutions that drive growth, efficiency, and competitive advantage in the digital age.",
+        values: ["Innovation", "Integrity", "Collaboration", "Excellence", "Customer Focus"],
+        culture: "We foster a collaborative, inclusive environment where creativity thrives. Our team values work-life balance, continuous learning, and making a meaningful impact on our clients' success.",
+        workEnvironment: "Hybrid working model with modern offices in central London. Flexible hours, open-plan collaborative spaces, and state-of-the-art technology infrastructure.",
+        diversityCommitment: "Committed to building a diverse and inclusive workplace where everyone feels valued and can reach their full potential. We actively promote equality and belonging.",
+        benefits: ["Private Healthcare", "Pension Scheme", "Flexible Working Hours", "Professional Development", "Enhanced Maternity/Paternity Leave", "Mental Health Support"],
+        perks: ["Free Meals", "Gym Membership", "Learning Budget", "Conference Attendance", "Team Social Events", "Cycle to Work Scheme"],
+        contactEmail: "careers@techflowsolutions.co.uk",
+        contactPhone: "+44 20 7123 4567",
+        linkedinPage: "https://linkedin.com/company/techflow-solutions",
+        foundedYear: "2018",
+        remotePolicy: "Hybrid (2-3 days in office)",
+        careersPage: "https://techflowsolutions.co.uk/careers",
+        techStack: ["React", "Node.js", "AWS", "TypeScript", "Python", "Docker"],
+        glassdoorUrl: "https://glassdoor.co.uk/overview/working-at-techflow-solutions"
+      };
+      
+      const profile = await storage.createEmployerProfile(demoProfileData);
+      res.status(201).json(profile);
+    } catch (error) {
+      console.error("Error creating employer profile:", error);
+      res.status(400).json({ message: "Invalid profile data" });
+    }
+  });
+
+  // Get current employer profile
+  app.get("/api/employer-profile/current", async (req, res) => {
+    try {
+      // Check for demo session
+      const userId = (req.session as any).userId;
+      const userRole = (req.session as any).userRole;
+      
+      console.log("Employer profile request - Session ID:", req.sessionID);
+      console.log("Session data:", { userId, userRole });
+      
+      if (!userId || userRole !== "employer") {
+        return res.status(401).json({ message: "Not authenticated as employer" });
+      }
+
+      // Return demo employer profile data
+      const demoEmployerProfile = {
+        id: userId,
+        userId: userId,
+        companyName: "TechFlow Solutions",
+        industry: "Technology",
+        companySize: "51-200 employees",
+        location: "London, UK",
+        website: "https://techflowsolutions.co.uk",
+        about: "TechFlow Solutions is a leading technology consultancy specializing in digital transformation and cloud solutions. We help businesses modernize their operations through innovative technology implementations.",
+        mission: "To empower businesses through cutting-edge technology solutions that drive growth, efficiency, and competitive advantage in the digital age.",
+        values: ["Innovation", "Integrity", "Collaboration", "Excellence", "Customer Focus"],
+        culture: "We foster a collaborative, inclusive environment where creativity thrives. Our team values work-life balance, continuous learning, and making a meaningful impact on our clients' success.",
+        workEnvironment: "Hybrid working model with modern offices in central London. Flexible hours, open-plan collaborative spaces, and state-of-the-art technology infrastructure.",
+        diversityCommitment: "Committed to building a diverse and inclusive workplace where everyone feels valued and can reach their full potential. We actively promote equality and belonging.",
+        benefits: ["Private Healthcare", "Pension Scheme", "Flexible Working Hours", "Professional Development", "Enhanced Maternity/Paternity Leave", "Mental Health Support"],
+        perks: ["Free Meals", "Gym Membership", "Learning Budget", "Conference Attendance", "Team Social Events", "Cycle to Work Scheme"],
+        contactEmail: "careers@techflowsolutions.co.uk",
+        contactPhone: "+44 20 7123 4567",
+        linkedinPage: "https://linkedin.com/company/techflow-solutions",
+        foundedYear: "2018",
+        remotePolicy: "Hybrid (2-3 days in office)",
+        careersPage: "https://techflowsolutions.co.uk/careers",
+        techStack: ["React", "Node.js", "AWS", "TypeScript", "Python", "Docker"],
+        logoUrl: "/attached_assets/company-logo-placeholder.png",
+        coverImageUrl: "/attached_assets/office-placeholder.jpg",
+        companyPhotos: [],
+        isComplete: false,
+        completionPercentage: 75,
+        profileStrength: 75,
+        overallRating: 4.5,
+        totalReviews: 15,
+        approvalStatus: "approved",
+        profileCompleted: false,
+        teamSize: 125
+      };
+
+      res.json(demoEmployerProfile);
+    } catch (error) {
+      console.error("Error fetching current employer profile:", error);
+      res.status(500).json({ message: "Failed to fetch profile" });
+    }
+  });
+
+  // Get employer profile by ID
+  app.get("/api/employer-profiles/:id", async (req, res) => {
+    try {
+      const profile = await storage.getEmployerProfileById(parseInt(req.params.id));
+      if (!profile) {
+        return res.status(404).json({ message: "Profile not found" });
+      }
+      res.json(profile);
+    } catch (error) {
+      console.error("Error fetching employer profile:", error);
+      res.status(500).json({ message: "Failed to fetch profile" });
+    }
+  });
+
+  app.put("/api/employer-profiles/:id", async (req, res) => {
+    try {
+      const updates = insertEmployerProfileSchema.partial().parse(req.body);
+      const profile = await storage.updateEmployerProfile(parseInt(req.params.id), updates);
+      res.json(profile);
+    } catch (error) {
+      console.error("Error updating employer profile:", error);
+      res.status(400).json({ message: "Invalid update data" });
+    }
+  });
+
+  // Job routes
+  app.get("/api/jobs", async (req, res) => {
+    try {
+      const jobs = await storage.getAllJobs();
+      res.json(jobs);
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+      res.status(500).json({ message: "Failed to fetch jobs" });
+    }
+  });
+
+  app.get("/api/jobs/:id", async (req, res) => {
+    try {
+      const job = await storage.getJobById(parseInt(req.params.id));
+      if (!job) {
+        return res.status(404).json({ message: "Job not found" });
+      }
+      res.json(job);
+    } catch (error) {
+      console.error("Error fetching job:", error);
+      res.status(500).json({ message: "Failed to fetch job" });
+    }
+  });
+
+  app.get("/api/jobs/employer/:employerId", async (req, res) => {
+    try {
+      const jobs = await storage.getJobsByEmployer(parseInt(req.params.employerId));
+      res.json(jobs);
+    } catch (error) {
+      console.error("Error fetching employer jobs:", error);
+      res.status(500).json({ message: "Failed to fetch jobs" });
+    }
+  });
+
+  app.post("/api/jobs", async (req, res) => {
+    try {
+      const jobData = insertJobSchema.parse(req.body);
+      const job = await storage.createJob(jobData);
+      
+      // Only create workflow for active jobs, not drafts
+      if (job.status === "active") {
+        await storage.createWorkflow({
+          jobId: job.id,
+          currentStage: "applications",
+          totalStages: 5,
+          progress: "0",
+          status: "active",
+        });
+      }
+      
+      res.status(201).json(job);
+    } catch (error) {
+      console.error("Error creating job:", error);
+      res.status(400).json({ message: "Invalid job data" });
+    }
+  });
+
+  // Save draft job posting
+  app.post("/api/jobs/draft", async (req, res) => {
+    try {
+      const jobData = insertJobSchema.parse({
+        ...req.body,
+        status: "draft"
+      });
+      const job = await storage.createJob(jobData);
+      res.status(201).json(job);
+    } catch (error) {
+      console.error("Error saving draft job:", error);
+      res.status(400).json({ message: "Invalid job data" });
+    }
+  });
+
+  // Get employer's draft jobs
+  app.get("/api/jobs/drafts/employer/:employerId", async (req, res) => {
+    try {
+      const jobs = await storage.getJobsByEmployer(parseInt(req.params.employerId));
+      const draftJobs = jobs.filter(job => job.status === "draft");
+      res.json(draftJobs);
+    } catch (error) {
+      console.error("Error fetching draft jobs:", error);
+      res.status(500).json({ message: "Failed to fetch draft jobs" });
+    }
+  });
+
+  // Convert draft to active job
+  app.patch("/api/jobs/:id/publish", async (req, res) => {
+    try {
+      const job = await storage.updateJob(parseInt(req.params.id), { status: "active" });
+      
+      // Create workflow when job is published
+      await storage.createWorkflow({
+        jobId: job.id,
+        currentStage: "applications",
+        totalStages: 5,
+        progress: "0",
+        status: "active",
+      });
+      
+      res.json(job);
+    } catch (error) {
+      console.error("Error publishing job:", error);
+      res.status(400).json({ message: "Failed to publish job" });
+    }
+  });
+
+  app.put("/api/jobs/:id", async (req, res) => {
+    try {
+      const updates = insertJobSchema.partial().parse(req.body);
+      const job = await storage.updateJob(parseInt(req.params.id), updates);
+      res.json(job);
+    } catch (error) {
+      console.error("Error updating job:", error);
+      res.status(400).json({ message: "Invalid update data" });
+    }
+  });
+
+  app.delete("/api/jobs/:id", async (req, res) => {
+    try {
+      await storage.deleteJob(parseInt(req.params.id));
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting job:", error);
+      res.status(500).json({ message: "Failed to delete job" });
+    }
+  });
+
+  // Challenge routes
+  app.get("/api/challenges", async (req, res) => {
+    try {
+      const challenges = await storage.getAllChallenges();
+      res.json(challenges);
+    } catch (error) {
+      console.error("Error fetching challenges:", error);
+      res.status(500).json({ message: "Failed to fetch challenges" });
+    }
+  });
+
+  app.get("/api/challenges/active", async (req, res) => {
+    try {
+      const challenges = await storage.getActiveChallenges();
+      res.json(challenges);
+    } catch (error) {
+      console.error("Error fetching active challenges:", error);
+      res.status(500).json({ message: "Failed to fetch challenges" });
+    }
+  });
+
+  app.get("/api/challenges/:id", async (req, res) => {
+    try {
+      const challenge = await storage.getChallengeById(parseInt(req.params.id));
+      if (!challenge) {
+        return res.status(404).json({ message: "Challenge not found" });
+      }
+      res.json(challenge);
+    } catch (error) {
+      console.error("Error fetching challenge:", error);
+      res.status(500).json({ message: "Failed to fetch challenge" });
+    }
+  });
+
+  app.post("/api/challenges", async (req, res) => {
+    try {
+      const challengeData = insertChallengeSchema.parse(req.body);
+      const challenge = await storage.createChallenge(challengeData);
+      res.status(201).json(challenge);
+    } catch (error) {
+      console.error("Error creating challenge:", error);
+      res.status(400).json({ message: "Invalid challenge data" });
+    }
+  });
+
+  app.put("/api/challenges/:id", async (req, res) => {
+    try {
+      const updates = insertChallengeSchema.partial().parse(req.body);
+      const challenge = await storage.updateChallenge(parseInt(req.params.id), updates);
+      res.json(challenge);
+    } catch (error) {
+      console.error("Error updating challenge:", error);
+      res.status(400).json({ message: "Invalid update data" });
+    }
+  });
+
+  // Application routes
+  app.get("/api/applications/job/:jobId", async (req, res) => {
+    try {
+      const applications = await storage.getApplicationsByJob(parseInt(req.params.jobId));
+      res.json(applications);
+    } catch (error) {
+      console.error("Error fetching job applications:", error);
+      res.status(500).json({ message: "Failed to fetch applications" });
+    }
+  });
+
+  app.get("/api/applications/job-seeker/:jobSeekerId", async (req, res) => {
+    try {
+      const applications = await storage.getApplicationsByJobSeeker(parseInt(req.params.jobSeekerId));
+      res.json(applications);
+    } catch (error) {
+      console.error("Error fetching job seeker applications:", error);
+      res.status(500).json({ message: "Failed to fetch applications" });
+    }
+  });
+
+  app.post("/api/applications", async (req, res) => {
+    try {
+      const applicationData = insertApplicationSchema.parse(req.body);
+      const application = await storage.createApplication(applicationData);
+      res.status(201).json(application);
+    } catch (error) {
+      console.error("Error creating application:", error);
+      res.status(400).json({ message: "Invalid application data" });
+    }
+  });
+
+  app.put("/api/applications/:id", async (req, res) => {
+    try {
+      const updates = insertApplicationSchema.partial().parse(req.body);
+      const application = await storage.updateApplication(parseInt(req.params.id), updates);
+      res.json(application);
+    } catch (error) {
+      console.error("Error updating application:", error);
+      res.status(400).json({ message: "Invalid update data" });
+    }
+  });
+
+  // Application Feedback routes
+  app.get("/api/application-feedback/:applicationId", async (req, res) => {
+    try {
+      const applicationId = parseInt(req.params.applicationId);
+      
+      // Generate feedback using the scoring algorithm
+      const feedback = await scoringAlgorithm.generateApplicationFeedback(applicationId);
+      
+      if (!feedback) {
+        return res.status(404).json({ message: "Application or feedback not found" });
+      }
+      
+      res.json(feedback);
+    } catch (error) {
+      console.error("Error fetching application feedback:", error);
+      res.status(500).json({ message: "Failed to fetch feedback" });
+    }
+  });
+
+  // Challenge Submission routes
+  app.get("/api/challenge-submissions/application/:applicationId", async (req, res) => {
+    try {
+      const submissions = await storage.getChallengeSubmissionsByApplication(parseInt(req.params.applicationId));
+      res.json(submissions);
+    } catch (error) {
+      console.error("Error fetching challenge submissions:", error);
+      res.status(500).json({ message: "Failed to fetch submissions" });
+    }
+  });
+
+  app.post("/api/challenge-submissions", async (req, res) => {
+    try {
+      const submissionData = insertChallengeSubmissionSchema.parse(req.body);
+      const submission = await storage.createChallengeSubmission(submissionData);
+      res.status(201).json(submission);
+    } catch (error) {
+      console.error("Error creating challenge submission:", error);
+      res.status(400).json({ message: "Invalid submission data" });
+    }
+  });
+
+  app.put("/api/challenge-submissions/:id", async (req, res) => {
+    try {
+      const updates = insertChallengeSubmissionSchema.partial().parse(req.body);
+      const submission = await storage.updateChallengeSubmission(parseInt(req.params.id), updates);
+      res.json(submission);
+    } catch (error) {
+      console.error("Error updating challenge submission:", error);
+      res.status(400).json({ message: "Invalid update data" });
+    }
+  });
+
+  // Workflow routes
+  app.get("/api/workflows", async (req, res) => {
+    try {
+      const workflows = await storage.getAllWorkflows();
+      res.json(workflows);
+    } catch (error) {
+      console.error("Error fetching workflows:", error);
+      res.status(500).json({ message: "Failed to fetch workflows" });
+    }
+  });
+
+  app.get("/api/workflows/job/:jobId", async (req, res) => {
+    try {
+      const workflow = await storage.getWorkflowByJob(parseInt(req.params.jobId));
+      if (!workflow) {
+        return res.status(404).json({ message: "Workflow not found" });
+      }
+      res.json(workflow);
+    } catch (error) {
+      console.error("Error fetching workflow:", error);
+      res.status(500).json({ message: "Failed to fetch workflow" });
+    }
+  });
+
+  app.put("/api/workflows/:id", async (req, res) => {
+    try {
+      const updates = insertWorkflowSchema.partial().parse(req.body);
+      const workflow = await storage.updateWorkflow(parseInt(req.params.id), updates);
+      res.json(workflow);
+    } catch (error) {
+      console.error("Error updating workflow:", error);
+      res.status(400).json({ message: "Invalid update data" });
+    }
+  });
+
+  // Employer Application routes
+  app.get("/api/employer-applications", async (req, res) => {
+    try {
+      const applications = await storage.getAllEmployerApplications();
+      res.json(applications);
+    } catch (error) {
+      console.error("Error fetching employer applications:", error);
+      res.status(500).json({ message: "Failed to fetch applications" });
+    }
+  });
+
+  app.post("/api/employer-applications", async (req, res) => {
+    try {
+      console.log("Received employer application data:", req.body);
+      const applicationData = insertEmployerApplicationSchema.parse(req.body);
+      const application = await storage.createEmployerApplication(applicationData);
+      res.status(201).json(application);
+    } catch (error) {
+      console.error("Error creating employer application:", error);
+      console.error("Validation error details:", error);
+      res.status(400).json({ 
+        message: "Invalid application data",
+        details: error.message 
+      });
+    }
+  });
+
+  app.put("/api/employer-applications/:id/review", async (req, res) => {
+    try {
+      const { status, reviewNotes, reviewedBy } = req.body;
+      const application = await storage.reviewEmployerApplication(
+        parseInt(req.params.id),
+        status,
+        reviewNotes,
+        reviewedBy
+      );
+      res.json(application);
+    } catch (error) {
+      console.error("Error reviewing employer application:", error);
+      res.status(400).json({ message: "Invalid review data" });
+    }
+  });
+
+  // Job Seeker Onboarding routes
+  app.post("/api/onboarding", async (req, res) => {
+    try {
+      const onboardingData = insertOnboardingResponseSchema.parse(req.body);
+      // Add user ID from session/auth if available
+      const response = await storage.createOnboardingResponse(onboardingData);
+      res.status(201).json(response);
+    } catch (error) {
+      console.error("Error saving onboarding response:", error);
+      res.status(400).json({ message: "Invalid onboarding data" });
+    }
+  });
+
+  app.get("/api/onboarding/:userId", async (req, res) => {
+    try {
+      const response = await storage.getOnboardingResponse(parseInt(req.params.userId));
+      if (!response) {
+        return res.status(404).json({ message: "Onboarding response not found" });
+      }
+      res.json(response);
+    } catch (error) {
+      console.error("Error fetching onboarding response:", error);
+      res.status(500).json({ message: "Failed to fetch onboarding data" });
+    }
+  });
+
+  // Behavioral Assessment routes
+  app.get("/api/behavioral-assessment/questions", async (req, res) => {
+    try {
+      res.json(ASSESSMENT_QUESTIONS);
+    } catch (error) {
+      console.error("Error fetching assessment questions:", error);
+      res.status(500).json({ message: "Failed to fetch assessment questions" });
+    }
+  });
+
+
+
+  // Analytics routes
+  app.get("/api/analytics/platform-stats", async (req, res) => {
+    try {
+      const stats = await storage.getPlatformStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching platform stats:", error);
+      res.status(500).json({ message: "Failed to fetch platform stats" });
+    }
+  });
+
+  app.get("/api/analytics/job-matches/:jobSeekerId", async (req, res) => {
+    try {
+      const matches = await storage.getJobMatchesForSeeker(parseInt(req.params.jobSeekerId));
+      res.json(matches);
+    } catch (error) {
+      console.error("Error fetching job matches:", error);
+      res.status(500).json({ message: "Failed to fetch job matches" });
+    }
+  });
+
+  // Challenge Gamification routes
+  app.get('/api/challenges/attempts/:jobSeekerId', async (req, res) => {
+    try {
+      const jobSeekerId = parseInt(req.params.jobSeekerId);
+      const attempts = await storage.getChallengeAttempts(jobSeekerId);
+      res.json(attempts);
+    } catch (error) {
+      console.error("Error fetching challenge attempts:", error);
+      res.status(500).json({ message: "Failed to fetch challenge attempts" });
+    }
+  });
+
+  app.post('/api/challenges/attempts', async (req, res) => {
+    try {
+      const attempt = await storage.createChallengeAttempt(req.body);
+      res.json(attempt);
+    } catch (error) {
+      console.error("Error creating challenge attempt:", error);
+      res.status(500).json({ message: "Failed to create challenge attempt" });
+    }
+  });
+
+  app.get('/api/challenges/:challengeId/leaderboard', async (req, res) => {
+    try {
+      const challengeId = parseInt(req.params.challengeId);
+      const leaderboard = await storage.getChallengeLeaderboard(challengeId);
+      res.json(leaderboard);
+    } catch (error) {
+      console.error("Error fetching leaderboard:", error);
+      res.status(500).json({ message: "Failed to fetch leaderboard" });
+    }
+  });
+
+  app.post('/api/challenges/streak/:jobSeekerId', async (req, res) => {
+    try {
+      const jobSeekerId = parseInt(req.params.jobSeekerId);
+      const streak = await storage.updateChallengeStreak(jobSeekerId);
+      res.json(streak);
+    } catch (error) {
+      console.error("Error updating streak:", error);
+      res.status(500).json({ message: "Failed to update streak" });
+    }
+  });
+
+  app.get('/api/challenges/weekly', async (req, res) => {
+    try {
+      const weeklyChallenges = await storage.getWeeklyChallenges();
+      res.json(weeklyChallenges);
+    } catch (error) {
+      console.error("Error fetching weekly challenges:", error);
+      res.status(500).json({ message: "Failed to fetch weekly challenges" });
+    }
+  });
+
+  // Behavioral Assessment routes
+  app.get('/api/assessment/questions', (req, res) => {
+    res.json({
+      basic: ASSESSMENT_QUESTIONS,
+      enhanced: ENHANCED_ASSESSMENT_QUESTIONS
+    });
+  });
+
+  app.post('/api/assessment/calculate', async (req, res) => {
+    try {
+      const { responses, type = 'basic', userId } = req.body;
+      
+      let profile, insights, summary;
+      
+      if (type === 'enhanced') {
+        const { generateDiscSummary } = await import('./enhanced-disc-assessment');
+        profile = calculateDiscProfile(responses);
+        insights = generateEnhancedInsights(profile);
+        summary = generateDiscSummary(profile);
+      } else {
+        // Convert responses to expected format for basic assessment
+        const formattedResponses = Object.entries(responses).map(([questionId, answer]) => {
+          // Find the question and option to get DISC values
+          const question = ASSESSMENT_QUESTIONS.find(q => q.id === questionId);
+          const option = question?.options.find(opt => opt.text === answer);
+          
+          return {
+            questionId,
+            answer: answer as string,
+            discValues: option?.disc || { red: 0, yellow: 0, green: 0, blue: 0 }
+          };
+        });
+        
+        profile = calculateDiscProfile(formattedResponses);
+        insights = generatePersonalityInsights(profile);
+        summary = "Behavioral Profile"; // Basic fallback
+      }
+
+      // Award points and update user profile if userId provided
+      if (userId) {
+        try {
+          const user = await storage.getUser(userId);
+          if (user && user.userType === 'job_seeker') {
+            const jobSeekerProfile = await storage.getJobSeekerProfile(userId);
+            if (jobSeekerProfile) {
+              const isRetake = jobSeekerProfile.assessmentCompleted;
+              const pointsToAward = isRetake ? 25 : 100; // Less points for retakes
+              
+              await storage.updateJobSeekerProfile(jobSeekerProfile.id, {
+                assessmentCompleted: true,
+                assessmentScore: profile,
+                assessmentCompletedAt: new Date(),
+                assessmentRetakes: isRetake ? (jobSeekerProfile.assessmentRetakes || 0) + 1 : 0,
+                totalPoints: (jobSeekerProfile.totalPoints || 0) + pointsToAward
+              });
+              
+              profile.pointsAwarded = pointsToAward;
+            }
+          }
+        } catch (error) {
+          console.error("Error updating user assessment:", error);
+          // Continue without failing the assessment
+        }
+      }
+      
+      res.json({
+        profile,
+        insights,
+        summary,
+        discSummary: type === 'enhanced' ? {
+          dimensions: {
+            dominant: profile.red,
+            influential: profile.yellow,
+            steady: profile.green,
+            conscientious: profile.blue
+          },
+          topTraits: [
+            ...(profile as any).dominantTraits?.slice(0, 2) || [],
+            ...(profile as any).influentialTraits?.slice(0, 2) || [],
+            ...(profile as any).steadyTraits?.slice(0, 2) || [],
+            ...(profile as any).conscientiousTraits?.slice(0, 2) || []
+          ].slice(0, 5),
+          workStyle: profile.workStyle,
+          communicationStyle: profile.communicationStyle
+        } : {
+          primaryType: (profile as any).primaryProfile,
+          secondaryType: (profile as any).secondaryProfile,
+          workStyle: profile.workStyle,
+          communicationStyle: profile.communicationStyle
+        }
+      });
+    } catch (error) {
+      console.error("Error calculating behavioral profile:", error);
+      res.status(500).json({ message: "Failed to calculate behavioral profile" });
+    }
+  });
+
+  // Enhanced 30-question DISC assessment endpoint (british spelling)
+  app.post("/api/behavioural-assessment", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
+    try {
+      console.log("🔍 Assessment endpoint hit");
+      const { responses } = req.body;
+      const userId = (req.user as any)?.id;
+      
+      if (!userId) {
+        console.log("❌ No user ID found");
+        return res.status(401).json({ error: "User ID not found" });
+      }
+
+      console.log(`🔍 Processing behavioral assessment for user ${userId} with ${responses?.length} responses`);
+
+      // Validate responses - allow flexible length for testing
+      if (!responses || !Array.isArray(responses)) {
+        console.log("❌ Invalid responses format");
+        return res.status(400).json({ error: "Invalid assessment responses" });
+      }
+
+      // Calculate DISC profile with validation and detailed logging
+      let profile: any, insights: any;
+      
+      try {
+        console.log("🔍 Importing assessment functions...");
+        const { calculateDiscProfile, generatePersonalityInsights } = await import("./enhanced-behavioral-assessment");
+        console.log("✅ Functions imported successfully");
+        
+        console.log("🔍 Calculating DISC profile...");
+        // Use the responses directly - they already have the correct mostLikeMe/leastLikeMe format
+        profile = calculateDiscProfile(responses);
+        console.log("✅ Profile calculated successfully:", { 
+          red: profile.red, 
+          yellow: profile.yellow, 
+          green: profile.green, 
+          blue: profile.blue
+        });
+        
+        // Generate personality insights
+        console.log("🔍 Generating personality insights...");
+        insights = generatePersonalityInsights(profile);
+        console.log("✅ Insights generated successfully");
+        
+      } catch (error) {
+        console.error("❌ Error in DISC calculation:", error);
+        console.error("❌ Error stack:", (error as any)?.stack);
+        return res.status(500).json({ 
+          error: "Failed to calculate DISC profile", 
+          details: (error as any).message 
+        });
+      }
+      
+      // Calculate points awarded
+      const pointsAwarded = 100; // Standard points for completing assessment
+      profile.pointsAwarded = pointsAwarded;
+      
+      // Store assessment results with new schema
+      try {
+        console.log("Storing assessment results...");
+        
+        // Get current job seeker profile to check for existing points
+        const currentProfile = await storage.getJobSeekerProfile(userId);
+        console.log("Current profile found:", !!currentProfile);
+        const currentPoints = currentProfile?.totalPoints || 0;
+        console.log("Current points:", currentPoints);
+        
+        const assessmentData = {
+          discRedPercentage: profile.red,
+          discYellowPercentage: profile.yellow,
+          discGreenPercentage: profile.green,
+          discBluePercentage: profile.blue,
+          assessmentCompleted: true,
+          assessmentValidityScore: profile.validityScore || 85,
+          assessmentConsistencyScore: profile.consistencyScore || 90,
+          assessmentSocialDesirabilityScore: profile.socialDesirabilityScore || 25,
+          assessmentCompletedAt: new Date(),
+          totalPoints: currentPoints + pointsAwarded
+        };
+        
+        console.log("Assessment data to store:", assessmentData);
+        
+        const result = await storage.updateJobSeekerBehavioralAssessment(userId, assessmentData);
+        console.log("Storage result:", result);
+        
+        console.log("Assessment results stored successfully.");
+        
+      } catch (error) {
+        console.error("Error storing assessment results:", error);
+        console.error("Error stack:", (error as any).stack);
+        throw new Error(`Failed to store assessment results: ${(error as any).message}`);
+      }
+
+      console.log("Sending response with profile:", { red: profile.red, yellow: profile.yellow, green: profile.green, blue: profile.blue });
+
+      res.json({
+        profile,
+        insights,
+        pointsAwarded: profile.pointsAwarded
+      });
+    } catch (error) {
+      console.error("Enhanced DISC assessment error:", error);
+      res.status(500).json({ error: "Failed to process assessment" });
+    }
+  });
+
+  // Get assessment questions endpoint
+  app.get("/api/assessment-questions", async (req, res) => {
+    try {
+      const { ENHANCED_DISC_QUESTIONS } = await import("./enhanced-disc-assessment");
+      res.json({ questions: ENHANCED_DISC_QUESTIONS });
+    } catch (error) {
+      console.error("Error fetching assessment questions:", error);
+      res.status(500).json({ error: "Failed to fetch questions" });
+    }
+  });
+
+  // Community engagement routes
+  app.post("/api/community/activity", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    try {
+      const { activityType, qualityScore, metadata } = req.body;
+      
+      await communityEngagement.awardCommunityPoints({
+        userId: req.user.id,
+        activityType,
+        points: 0, // Will be calculated by the service
+        qualityScore,
+        metadata
+      });
+
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error recording community activity:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Saved Companies routes
+  app.get("/api/saved-companies", async (req, res) => {
+    console.log("Get saved companies - Session ID:", req.sessionID);
+    console.log("Session data:", { userId: (req.session as any)?.userId, userRole: (req.session as any)?.userRole });
+    
+    const userId = (req.session as any)?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    try {
+      const savedCompanies = await storage.getSavedCompanies(userId);
+      res.json(savedCompanies);
+    } catch (error: any) {
+      console.error("Error fetching saved companies:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/saved-companies", async (req, res) => {
+    console.log("Save company - Session ID:", req.sessionID);
+    console.log("Session data:", { userId: req.session?.userId, userRole: req.session?.userRole });
+    
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    try {
+      const saveData = insertSavedCompanySchema.parse({
+        ...req.body,
+        userId: req.user.id
+      });
+      
+      // Check if company is already saved
+      const isAlreadySaved = await storage.isCompanySaved(req.user.id, saveData.companyId);
+      if (isAlreadySaved) {
+        return res.status(400).json({ error: "Company already saved" });
+      }
+      
+      const savedCompany = await storage.saveCompany(saveData);
+      res.status(201).json(savedCompany);
+    } catch (error: any) {
+      console.error("Error saving company:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.delete("/api/saved-companies/:companyId", async (req, res) => {
+    const userId = (req.session as any)?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    try {
+      await storage.removeSavedCompany(userId, req.params.companyId);
+      res.status(204).send();
+    } catch (error: any) {
+      console.error("Error removing saved company:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/saved-companies/:companyId/check", async (req, res) => {
+    console.log("Check saved company - Session ID:", req.sessionID);
+    console.log("Session data:", { userId: (req.session as any)?.userId, userRole: (req.session as any)?.userRole });
+    
+    const userId = (req.session as any)?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    try {
+      const isSaved = await storage.isCompanySaved(userId, req.params.companyId);
+      res.json({ isSaved });
+    } catch (error: any) {
+      console.error("Error checking if company is saved:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Notifications for saved company job alerts
+  app.get("/api/notifications", async (req, res) => {
+    const userId = (req.session as any)?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    try {
+      // Mock notifications for saved companies posting new jobs
+      const savedCompanies = await storage.getSavedCompanies(userId);
+      const notifications = savedCompanies.slice(0, 2).map((company, index) => ({
+        id: index + 1,
+        type: "job_alert",
+        title: `New job posted by ${company.companyName}`,
+        description: `Check out their latest ${index === 0 ? 'Marketing Assistant' : 'Social Media Coordinator'} opportunity!`,
+        companyId: company.companyId,
+        jobId: `job-00${index + 1}`,
+        createdAt: new Date(Date.now() - (index + 1) * 24 * 60 * 60 * 1000), // 1-2 days ago
+        isRead: false
+      }));
+      
+      res.json(notifications);
+    } catch (error: any) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/community/engagement", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    try {
+      const summary = await communityEngagement.getUserEngagementSummary(req.user.id);
+      res.json(summary);
+    } catch (error: any) {
+      console.error("Error getting engagement summary:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/community/upvote/:userId", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    try {
+      const targetUserId = parseInt(req.params.userId);
+      await communityEngagement.awardUpvote(targetUserId);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error awarding upvote:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Email notification routes
+  app.post("/api/notifications/message", async (req, res) => {
+    try {
+      const { 
+        recipientEmail, 
+        recipientName, 
+        senderName, 
+        companyName, 
+        jobTitle, 
+        messagePreview,
+        isInterview,
+        interviewDate,
+        interviewTime
+      } = req.body;
+
+      const emailData = {
+        recipientEmail,
+        recipientName,
+        senderName,
+        companyName,
+        jobTitle,
+        messagePreview,
+        isInterview,
+        interviewDate,
+        interviewTime
+      };
+
+      let success = false;
+      
+      if (isInterview) {
+        success = await emailNotificationService.sendInterviewNotification(emailData);
+      } else {
+        success = await emailNotificationService.sendNewMessageNotification(emailData);
+      }
+
+      res.json({ 
+        success, 
+        message: success ? "Email notification sent" : "Failed to send email notification" 
+      });
+
+    } catch (error) {
+      console.error("Error sending email notification:", error);
+      res.status(500).json({ error: "Failed to send email notification" });
+    }
+  });
+
+  // Checkpoint progress routes
+  app.get("/api/checkpoint-progress", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    try {
+      const checkpoints = await checkpointStorage.getUserCheckpoints(req.user.id);
+      res.json({ data: checkpoints });
+    } catch (error: any) {
+      console.error("Error getting checkpoint progress:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/checkpoint-progress", async (req, res) => {
+    if (!req.user) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    try {
+      const { checkpointId, data, phase } = req.body;
+      
+      if (!checkpointId || !data || !phase) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      await checkpointStorage.saveCheckpointProgress(req.user.id, checkpointId, data, phase);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error saving checkpoint progress:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/profile-completeness", async (req, res) => {
+    if (!req.user) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    try {
+      const completionStatus = await checkpointStorage.getCompletionStatus(req.user.id);
+      const hasCompletedCore = await checkpointStorage.hasCompletedCoreProfile(req.user.id);
+      const profile = await checkpointStorage.buildUserProfile(req.user.id);
+      
+      res.json({ 
+        completionStatus,
+        hasCompletedCore,
+        profileCompleteness: profile.profileCompleteness || 0
+      });
+    } catch (error: any) {
+      console.error("Error getting profile completeness:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get('/api/profile-completion-status', async (req, res) => {
+    if (!req.user) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const checkpoints = await checkpointStorage.getUserCheckpoints(req.user.id);
+      
+      // Map checkpoint data to dashboard format according to the 7-checkpoint plan
+      const status = {
+        workStyle: !!checkpoints['work-style'] || !!checkpoints['behavioral-assessment'],
+        personalStory: !!checkpoints['personal-story'],
+        educationLearning: !!checkpoints['education-learning'],
+        careerInterests: !!checkpoints['career-interests'],
+        jobPreferences: !!checkpoints['job-preferences'],
+        platformExperience: !!checkpoints['platform-experience'],
+        backgroundData: !!checkpoints['background-data']
+      };
+
+      res.json(status);
+    } catch (error) {
+      console.error("Error getting profile completion status:", error);
+      res.status(500).json({ error: "Failed to get completion status" });
+    }
+  });
+
+  app.get('/api/checkpoint-progress', async (req, res) => {
+    if (!req.user) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const checkpoints = await checkpointStorage.getUserCheckpoints(req.user.id);
+      res.json(checkpoints);
+    } catch (error) {
+      console.error("Error getting checkpoint progress:", error);
+      res.status(500).json({ error: "Failed to get checkpoint progress" });
+    }
+  });
+
+  // Persona generation and admin review routes
+  app.post("/api/generate-persona", async (req, res) => {
+    try {
+      const { checkpointData } = req.body;
+      
+      // Import persona generation
+      const { generatePersona } = await import("./persona-generation");
+      
+      // Generate persona from checkpoint data
+      const persona = generatePersona(checkpointData);
+      
+      // Generate challenge draft
+      const challengeDraft = `
+CHALLENGE DRAFT - ${checkpointData.checkpoint1?.roleTitle || 'Position'}
+
+Time Allocation: ${checkpointData.checkpoint5?.timeExpectation || 90} minutes
+
+Assessment Focus:
+${checkpointData.checkpoint5?.assessmentFocus?.map((focus: string) => `- ${focus}`).join('\n') || '- Problem-solving approach\n- Communication clarity\n- Attention to detail'}
+
+Challenge Scenario:
+Based on your checkpoint responses, this challenge will assess the candidate's ability to handle ${checkpointData.checkpoint1?.keyTasks?.join(', ') || 'key role responsibilities'} while demonstrating ${checkpointData.checkpoint4?.pressureResponse || 'collaborative problem-solving and quality focus'}.
+
+Success Criteria:
+- Demonstrates logical thinking process
+- Shows attention to quality and detail
+- Communicates clearly throughout
+- Exhibits growth mindset and coachability
+
+Custom Requirements:
+${checkpointData.checkpoint5?.customRequirements || 'Standard entry-level assessment approach'}
+      `.trim();
+
+      res.json({ persona, challengeDraft });
+    } catch (error: any) {
+      console.error("Error generating persona:", error);
+      res.status(500).json({ error: "Failed to generate persona" });
+    }
+  });
+
+  app.post("/api/submit-assessment-configuration", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const { allCheckpointData, persona, challengeDraft } = req.body;
+      
+      // Import admin review service
+      const { AdminReviewService } = await import("./admin-review");
+      const adminReview = new AdminReviewService();
+      
+      // Create a unique config ID
+      const configId = `config_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      // Store assessment configuration
+      const config = {
+        configId,
+        checkpointData: allCheckpointData,
+        persona,
+        challengeDraft,
+        submittedBy: req.user.id,
+        submittedAt: new Date()
+      };
+      
+      // Submit for admin review
+      const review = await adminReview.submitAssessmentForReview(configId, allCheckpointData.jobId || 1);
+      
+      res.json({ 
+        submissionId: configId,
+        reviewStatus: review.status,
+        expectedReviewTime: "24 hours"
+      });
+    } catch (error: any) {
+      console.error("Error submitting assessment configuration:", error);
+      res.status(500).json({ error: "Failed to submit configuration" });
+    }
+  });
+
+  app.post("/api/admin/review-job", async (req, res) => {
+    if (!req.isAuthenticated() || req.user.role !== 'admin') {
+      return res.sendStatus(403);
+    }
+
+    try {
+      const { jobId, action, notes } = req.body;
+      
+      const { AdminReviewService } = await import("./admin-review");
+      const adminReview = new AdminReviewService();
+      
+      if (action === 'approve') {
+        await adminReview.approveJobPosting(jobId, req.user.id, notes);
+      }
+      
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error reviewing job:", error);
+      res.status(500).json({ error: "Failed to review job" });
+    }
+  });
+
+  app.post("/api/admin/review-assessment", async (req, res) => {
+    if (!req.isAuthenticated() || req.user.role !== 'admin') {
+      return res.sendStatus(403);
+    }
+
+    try {
+      const { configId, action, notes } = req.body;
+      
+      const { AdminReviewService } = await import("./admin-review");
+      const adminReview = new AdminReviewService();
+      
+      if (action === 'approve') {
+        await adminReview.approveAssessmentConfig(configId, req.user.id, notes);
+      }
+      
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error reviewing assessment:", error);
+      res.status(500).json({ error: "Failed to review assessment" });
+    }
+  });
+
+  // Update application status and send notifications
+  app.post("/api/application-status", async (req, res) => {
+    try {
+      const { applicationId, newStatus, jobTitle } = req.body;
+      
+      // For demo purposes, we'll simulate status updates
+      // In a real system, this would update the database
+      console.log(`Updating application ${applicationId} to status: ${newStatus}`);
+      
+      // Get the user ID (in demo, we'll use user ID 1)
+      const userId = 1;
+      
+      // Send notification and email
+      await notificationService.notifyStatusChange(
+        userId,
+        applicationId,
+        'under_review', // old status
+        newStatus,
+        jobTitle
+      );
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error updating application status:", error);
+      res.status(500).json({ error: "Failed to update status" });
+    }
+  });
+
+  // Get behavioral insights for profile view
+  app.get("/api/behavioral-insights/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      // For demo user (userId = 1), get all profiles for this user and find one with assessment data
+      if (userId === 1) {
+        try {
+          // Get all profiles for user 1 and find one with completed assessment
+          const allProfiles = await storage.getAllJobSeekerProfiles();
+          const completedProfile = allProfiles.find(profile => 
+            profile.userId === userId && profile.assessmentCompleted
+          );
+          
+          if (completedProfile) {
+            const { generatePersonalityInsights } = await import("./enhanced-behavioral-assessment");
+            
+            // Use the actual assessment data from user testing
+            const enhancedProfile = {
+              red: parseFloat(completedProfile.discRedPercentage || '0'),
+              yellow: parseFloat(completedProfile.discYellowPercentage || '0'), 
+              green: parseFloat(completedProfile.discGreenPercentage || '0'),
+              blue: parseFloat(completedProfile.discBluePercentage || '0'),
+              dominantTraits: [],
+              influentialTraits: [],
+              steadyTraits: [],
+              conscientiousTraits: [],
+              workStyle: 'Results-driven approach',
+              personalityType: 'Strategic Powerhouse',
+              communicationStyle: 'Direct and focused communication',
+              decisionMaking: 'Quick decisions with clear reasoning',
+              stressResponse: 'Stays focused under pressure',
+              teamRole: 'Natural leader and decision maker',
+              leadership: 'Directive leadership style',
+              completedAt: completedProfile.assessmentCompletedAt || new Date(),
+              pointsAwarded: 100
+            };
+
+            // Generate insights using the same function as assessment completion
+            const insights = generatePersonalityInsights(enhancedProfile);
+            
+            return res.json({
+              profile: enhancedProfile,
+              insights,
+              strengthsDetailed: generateStrengthsFromDisc({
+                red: parseFloat(completedProfile.discRedPercentage || '0'),
+                yellow: parseFloat(completedProfile.discYellowPercentage || '0'), 
+                green: parseFloat(completedProfile.discGreenPercentage || '0'),
+                blue: parseFloat(completedProfile.discBluePercentage || '0')
+              })
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching demo user assessment data:", error);
+        }
+      }
+      
+      // Regular database lookup for other users
+      const profile = await storage.getJobSeekerProfile(userId);
+      
+      if (!profile || !profile.assessmentCompleted) {
+        return res.status(404).json({ error: "Assessment not completed" });
+      }
+
+      const { generatePersonalityInsights } = await import("./enhanced-behavioral-assessment");
+      
+      // Create an enhanced DISC profile from the stored percentages
+      const enhancedProfile = {
+        red: parseFloat(profile.discRedPercentage || '0'),
+        yellow: parseFloat(profile.discYellowPercentage || '0'), 
+        green: parseFloat(profile.discGreenPercentage || '0'),
+        blue: parseFloat(profile.discBluePercentage || '0'),
+        dominantTraits: [],
+        influentialTraits: [],
+        steadyTraits: [],
+        conscientiousTraits: [],
+        workStyle: 'Balanced approach',
+        personalityType: 'Thoughtful Collaborator',
+        communicationStyle: 'Collaborative communication',
+        decisionMaking: 'Thoughtful decision making',
+        stressResponse: 'Calm under pressure',
+        teamRole: 'Supportive team member',
+        leadership: 'Collaborative leadership',
+        completedAt: profile.assessmentCompletedAt || new Date(),
+        pointsAwarded: 75
+      };
+
+      const insights = generatePersonalityInsights(enhancedProfile);
+      
+      res.json({
+        profile: enhancedProfile,
+        insights,
+        strengthsDetailed: generateStrengthsFromDisc({
+          red: parseFloat(profile.discRedPercentage || '0'),
+          yellow: parseFloat(profile.discYellowPercentage || '0'), 
+          green: parseFloat(profile.discGreenPercentage || '0'),
+          blue: parseFloat(profile.discBluePercentage || '0')
+        })
+      });
+    } catch (error) {
+      console.error("Error fetching behavioral insights:", error);
+      res.status(500).json({ error: "Failed to fetch insights" });
+    }
+  });
+
+  // Job Acceptance route
+  app.post("/api/job-acceptance", async (req, res) => {
+    try {
+      const acceptanceData = req.body;
+      
+      // Store job acceptance data
+      await storage.recordJobAcceptance(acceptanceData);
+      
+      res.status(201).json({ message: "Job acceptance recorded successfully" });
+    } catch (error) {
+      console.error("Error recording job acceptance:", error);
+      res.status(500).json({ message: "Failed to record job acceptance" });
+    }
+  });
+
+  // Feedback and Outcome Tracking routes
+  app.post("/api/application-outcome", async (req, res) => {
+    try {
+      const outcomeData = req.body;
+      await outcomeTrackingService.recordApplicationOutcome(outcomeData);
+      res.status(201).json({ message: "Outcome recorded successfully" });
+    } catch (error) {
+      console.error("Error recording application outcome:", error);
+      res.status(500).json({ message: "Failed to record outcome" });
+    }
+  });
+
+  app.post("/api/feedback", async (req, res) => {
+    try {
+      const { token, ...feedbackData } = req.body;
+      
+      // Decode token to get application and user IDs
+      const decoded = Buffer.from(token, 'base64').toString('ascii');
+      const [applicationId, userId] = decoded.split('-');
+      
+      // Get application details
+      const application = await storage.getApplicationById(parseInt(applicationId));
+      if (!application) {
+        return res.status(404).json({ message: "Application not found" });
+      }
+      
+      // Prepare feedback response
+      const feedbackResponse = {
+        applicationId: parseInt(applicationId),
+        userId: parseInt(userId),
+        employerId: application.employerId,
+        jobId: application.jobId,
+        outcomeStage: "post_application",
+        ...feedbackData
+      };
+      
+      await outcomeTrackingService.processCandidateFeedback(feedbackResponse);
+      res.status(201).json({ message: "Feedback submitted successfully" });
+    } catch (error) {
+      console.error("Error processing feedback:", error);
+      res.status(500).json({ message: "Failed to process feedback" });
+    }
+  });
+
+  app.get("/api/feedback/:token", async (req, res) => {
+    try {
+      const { token } = req.params;
+      
+      // Decode token to get application details
+      const decoded = Buffer.from(token, 'base64').toString('ascii');
+      const [applicationId, userId] = decoded.split('-');
+      
+      const application = await storage.getApplicationById(parseInt(applicationId));
+      if (!application) {
+        return res.status(404).json({ message: "Application not found" });
+      }
+      
+      const user = await storage.getUserById(parseInt(userId));
+      const job = await storage.getJobById(application.jobId);
+      const employer = await storage.getEmployerById(application.employerId);
+      
+      res.json({
+        applicationId: parseInt(applicationId),
+        userId: parseInt(userId),
+        userName: user ? `${user.firstName} ${user.lastName}` : "Unknown",
+        jobTitle: job?.title || "Unknown Position",
+        companyName: employer?.companyName || "Unknown Company"
+      });
+    } catch (error) {
+      console.error("Error fetching feedback details:", error);
+      res.status(500).json({ message: "Failed to fetch feedback details" });
+    }
+  });
+
+  app.get("/api/outcome-tracking/stats", async (req, res) => {
+    try {
+      // Mock stats for demonstration - in production, these would come from database
+      const stats = {
+        totalPlacements: 47,
+        averageTimeToHire: 18,
+        sixMonthRetention: 89,
+        feedbackRate: 78,
+        totalFeedbackCollected: 156,
+        averageResponseRate: 78,
+        ratingsUpdated: 45,
+        companiesImproved: 12
+      };
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching outcome tracking stats:", error);
+      res.status(500).json({ message: "Failed to fetch stats" });
+    }
+  });
+
+  app.get("/api/outcome-tracking/recent", async (req, res) => {
+    try {
+      // Mock recent outcomes for demonstration
+      const recentOutcomes = [
+        {
+          id: 1,
+          jobTitle: "Marketing Assistant",
+          companyName: "TechFlow Solutions",
+          finalOutcome: "hired",
+          outcomeDate: "2024-01-15",
+          daysToPlacer: 21,
+          feedbackStatus: "completed",
+          overallExperience: 5,
+          stillEmployed: true
+        },
+        {
+          id: 2,
+          jobTitle: "Content Writer",
+          companyName: "CreativeHub",
+          finalOutcome: "offer_declined",
+          outcomeDate: "2024-01-20",
+          daysToPlacer: 18,
+          feedbackStatus: "completed",
+          overallExperience: 4
+        }
+      ];
+      res.json(recentOutcomes);
+    } catch (error) {
+      console.error("Error fetching recent outcomes:", error);
+      res.status(500).json({ message: "Failed to fetch recent outcomes" });
+    }
+  });
+
+  app.get("/api/success-stories", async (req, res) => {
+    try {
+      // Mock success stories for demonstration
+      const successStories = [
+        {
+          id: 1,
+          candidateName: "Sarah Chen",
+          jobTitle: "Marketing Assistant",
+          companyName: "TechFlow Solutions",
+          daysToPlacer: 21,
+          salaryIncrease: 4000,
+          candidateQuote: "Pollen made the process so smooth and the feedback was incredibly helpful.",
+          challengeOvercome: "First marketing role without prior experience",
+          publishedOnWebsite: true
+        },
+        {
+          id: 2,
+          candidateName: "James Wilson",
+          jobTitle: "Data Analyst",
+          companyName: "DataCorp",
+          daysToPlacer: 16,
+          salaryIncrease: 6000,
+          candidateQuote: "The skills-based approach helped me showcase my abilities despite being a career changer.",
+          challengeOvercome: "Career transition from retail to tech",
+          publishedOnWebsite: false
+        }
+      ];
+      res.json(successStories);
+    } catch (error) {
+      console.error("Error fetching success stories:", error);
+      res.status(500).json({ message: "Failed to fetch success stories" });
+    }
+  });
+
+  app.post("/api/trigger-feedback-request", async (req, res) => {
+    try {
+      const { applicationId, outcomeStage, finalOutcome } = req.body;
+      
+      // Trigger feedback request based on application outcome
+      await outcomeTrackingService.recordApplicationOutcome({
+        applicationId,
+        finalOutcome,
+        outcomeStage,
+        outcomeDate: new Date()
+      });
+      
+      res.status(201).json({ message: "Feedback request triggered successfully" });
+    } catch (error) {
+      console.error("Error triggering feedback request:", error);
+      res.status(500).json({ message: "Failed to trigger feedback request" });
+    }
+  });
+
+  app.post("/api/job-acceptance", async (req, res) => {
+    try {
+      const acceptanceData = req.body;
+      await storage.recordJobAcceptance(acceptanceData);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error recording job acceptance:", error);
+      res.status(500).json({ error: "Failed to record job acceptance" });
+    }
+  });
+
+  app.post("/api/job-seeker-feedback", async (req, res) => {
+    try {
+      const feedbackData = req.body;
+      
+      // Store job seeker feedback with timestamp
+      const feedback = {
+        applicationId: feedbackData.applicationId,
+        jobTitle: feedbackData.jobTitle,
+        company: feedbackData.company,
+        communicationRating: feedbackData.communicationRating,
+        processClarity: feedbackData.processClarity,
+        timelyness: feedbackData.timelyness,
+        fairness: feedbackData.fairness,
+        wouldRecommend: feedbackData.wouldRecommend,
+        additionalComments: feedbackData.additionalComments,
+        submittedAt: new Date().toISOString()
+      };
+      
+      // In production, this would be saved to database
+      // For demo purposes, we'll just log it
+      console.log("Job seeker feedback received:", feedback);
+      
+      res.json({ success: true, message: "Feedback submitted successfully" });
+    } catch (error) {
+      console.error("Error submitting job seeker feedback:", error);
+      res.status(500).json({ error: "Failed to submit feedback" });
+    }
+  });
+
+  // Platform feedback endpoint (one-time feedback collection)
+  app.post("/api/platform-feedback", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    try {
+      const { 
+        overallExperience, 
+        careerImpact, 
+        helpfulAspects, 
+        improvementSuggestions, 
+        recommendToFriend, 
+        additionalComments 
+      } = req.body;
+      
+      // Store platform feedback data
+      const feedbackData = {
+        userId: req.user.id,
+        overallExperience,
+        careerImpact,
+        helpfulAspects: helpfulAspects || [],
+        improvementSuggestions: improvementSuggestions || null,
+        recommendToFriend: recommendToFriend || null,
+        additionalComments: additionalComments || null,
+        submittedAt: new Date().toISOString(),
+        userAge: req.user.createdAt ? Math.floor((Date.now() - new Date(req.user.createdAt).getTime()) / (1000 * 60 * 60 * 24)) : null
+      };
+      
+      console.log("Platform feedback received:", feedbackData);
+      
+      // In production, this would be stored in database
+      // await storage.storePlatformFeedback(feedbackData);
+      
+      res.json({ 
+        success: true, 
+        message: "Feedback submitted successfully" 
+      });
+    } catch (error) {
+      console.error("Error submitting platform feedback:", error);
+      res.status(500).json({ error: "Failed to submit feedback" });
+    }
+  });
+
+  // Account deletion endpoint
+  app.post("/api/delete-account", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    try {
+      const { primaryReason, specificReason, additionalFeedback, willingToReturn } = req.body;
+      
+      // Record exit survey data
+      const exitSurveyData = {
+        userId: req.user.id,
+        primaryReason,
+        specificReason,
+        additionalFeedback: additionalFeedback || null,
+        willingToReturn: willingToReturn || false,
+        deletedAt: new Date().toISOString()
+      };
+      
+      console.log("Exit survey data:", exitSurveyData);
+      
+      // In production, this would:
+      // 1. Store exit survey data
+      // 2. Delete user data according to GDPR requirements
+      // 3. Send confirmation email
+      // 4. Log out the user
+      
+      // For demo purposes, we'll just log the data
+      // In a real implementation, you would:
+      // await storage.recordExitSurvey(exitSurveyData);
+      // await storage.deleteUserAccount(req.user.id);
+      
+      // Destroy the session
+      req.logout((err) => {
+        if (err) {
+          console.error("Error logging out user:", err);
+        }
+      });
+      
+      res.json({ 
+        success: true, 
+        message: "Account deletion request processed successfully" 
+      });
+    } catch (error) {
+      console.error("Error processing account deletion:", error);
+      res.status(500).json({ error: "Failed to process account deletion" });
+    }
+  });
+
+  // Chatbot API endpoint
+  app.post("/api/chatbot", async (req, res) => {
+    try {
+      const { message } = req.body;
+      
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ error: "Message is required" });
+      }
+
+      // Get user ID if authenticated, but allow unauthenticated users
+      const userId = req.user?.id;
+
+      const response = await chatbotService.processMessage(message, userId);
+      res.json(response);
+    } catch (error: any) {
+      console.error("Chatbot error:", error);
+      res.status(500).json({ 
+        error: "Sorry, I'm having trouble right now. Please try again in a moment.",
+        fallbackMessage: "You can browse jobs, check your applications, or visit our community page while I get back online."
+      });
+    }
+  });
+
+  // PDF generation endpoint using Puppeteer
+  app.post("/api/generate-pdf", async (req, res) => {
+    // Check authentication - either passport user or demo session
+    const userId = req.user?.id || req.session?.userId;
+    if (!userId) {
+      console.log("PDF generation failed - no user ID found");
+      console.log("req.user:", req.user);
+      console.log("req.session:", req.session);
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    let browser;
+    try {
+      console.log("Starting PDF generation for user:", userId);
+      const puppeteer = await import('puppeteer');
+      
+      // Try to find Chromium executable dynamically
+      const { execSync } = await import('child_process');
+      let executablePath;
+      try {
+        executablePath = execSync('which chromium-browser', { encoding: 'utf8' }).trim();
+      } catch {
+        try {
+          executablePath = execSync('which chromium', { encoding: 'utf8' }).trim();
+        } catch {
+          // Fallback to common paths
+          executablePath = '/usr/bin/chromium-browser';
+        }
+      }
+      
+      console.log("Using Chromium at:", executablePath);
+      
+      browser = await puppeteer.default.launch({
+        headless: true,
+        executablePath,
+        args: [
+          '--no-sandbox', 
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--font-render-hinting=medium',
+          '--disable-accelerated-2d-canvas',
+          '--no-first-run',
+          '--no-zygote',
+          '--single-process',
+          '--disable-gpu'
+        ],
+        defaultViewport: {
+          width: 1400,  // Wider to accommodate full two-column layout
+          height: 2400, // Much taller to capture all content
+          deviceScaleFactor: 1.5, // Good balance of quality and performance
+        }
+      });
+
+      const page = await browser.newPage();
+      
+      // Get session cookie from the request
+      const sessionCookie = req.headers.cookie;
+      if (sessionCookie) {
+        // Parse and set cookies for the page
+        const cookies = sessionCookie.split(';').map(cookie => {
+          const [name, value] = cookie.trim().split('=');
+          return {
+            name: name,
+            value: value || '',
+            domain: 'localhost',
+            path: '/'
+          };
+        });
+        await page.setCookie(...cookies);
+      }
+
+      // Navigate to the profile-print page for PDF export (source of truth)
+      const profileUrl = `http://localhost:5000/profile-print`;
+      console.log("Navigating to:", profileUrl);
+      
+      await page.goto(profileUrl, {
+        waitUntil: 'networkidle0',
+        timeout: 30000
+      });
+
+      // Wait for the main content to load
+      await page.waitForSelector('body', { timeout: 10000 });
+      
+      // Emulate screen media for better emoji rendering
+      await page.emulateMediaType('screen');
+      
+      // Set user agent to ensure emoji font loading
+      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
+      
+      // Simply hide navigation elements - no compression or scaling
+      await page.addStyleTag({
+        content: `
+          .pdf-hidden { display: none !important; }
+          button, nav, .navigation { display: none !important; }
+          
+          /* Keep natural page layout - no compression */
+          body {
+            background: white !important;
+          }
+          
+          #profile-export-container { 
+            background: white !important;
+            box-shadow: none !important;
+          }
+        `
+      });
+      
+      // Wait for layout stabilization
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Generate PDF that captures all content without cutting off
+      const pdfBuffer = await page.pdf({
+        width: '13in',    // Much wider to accommodate full two-column layout
+        height: '20in',   // Much taller to ensure all content fits
+        printBackground: true,
+        margin: {
+          top: '0.25in',
+          right: '0.25in', 
+          bottom: '0.25in',
+          left: '0.25in'
+        },
+        scale: 0.85,      // Slightly smaller scale to fit more content
+        preferCSSPageSize: false,
+        displayHeaderFooter: false,
+        pageRanges: '1'   // Only first page
+      });
+
+      await browser.close();
+      console.log("PDF generated successfully, size:", pdfBuffer.length);
+
+      // Set response headers for PDF download
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="Pollen_Profile.pdf"');
+      res.setHeader('Content-Length', pdfBuffer.length);
+      
+      // Send raw buffer directly to response stream
+      res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': 'attachment; filename="Pollen_Profile.pdf"',
+        'Content-Length': pdfBuffer.length
+      });
+      res.end(pdfBuffer);
+    } catch (error: any) {
+      console.error("Error generating PDF:", error);
+      console.error("Error stack:", error.stack);
+      
+      // Clean up browser if it exists
+      if (browser) {
+        try {
+          await browser.close();
+        } catch (closeError) {
+          console.error("Error closing browser:", closeError);
+        }
+      }
+      
+      res.status(500).json({ 
+        error: "Failed to generate PDF", 
+        details: error.message 
+      });
+    }
+  });
+
+  // ==================== COMPREHENSIVE ATS ENDPOINTS ====================
+
+  // 1. Get candidate matches for a job
+  app.get('/api/jobs/:jobId/candidate-matches', async (req, res) => {
+    try {
+      const { jobId } = req.params;
+      
+      // Mock data for demo - in real implementation, this would query the database
+      const candidateMatches = [
+        {
+          id: 1,
+          name: "Sarah Johnson",
+          matchScore: 89,
+          skillsScore: 92,
+          behaviouralScore: 85,
+          profileStrength: 88,
+          applicationDate: "2025-01-20",
+          status: "new",
+          summary: "Excellent communication skills with strong attention to detail. Previous experience in customer service shows transferable skills.",
+          keyStrengths: ["Communication", "Problem Solving", "Team Collaboration"],
+          pollenNotes: "Strong cultural fit based on behavioural assessment. Shows growth mindset and coachability."
+        },
+        {
+          id: 2,
+          name: "Marcus Williams",
+          matchScore: 87,
+          skillsScore: 85,
+          behaviouralScore: 90,
+          profileStrength: 82,
+          applicationDate: "2025-01-19",
+          status: "reviewed",
+          summary: "Recent graduate with impressive academic performance and relevant internship experience.",
+          keyStrengths: ["Analytical Thinking", "Quick Learning", "Adaptability"],
+          pollenNotes: "Demonstrates excellent potential for growth. Strong technical foundation from academic projects."
+        },
+        {
+          id: 3,
+          name: "Emma Thompson",
+          matchScore: 84,
+          skillsScore: 88,
+          behaviouralScore: 82,
+          profileStrength: 90,
+          applicationDate: "2025-01-18",
+          status: "feedback_pending",
+          summary: "Career changer from retail with excellent people skills and proven track record of learning new systems.",
+          keyStrengths: ["Customer Focus", "Learning Agility", "Resilience"],
+          pollenNotes: "Strong motivation for career transition. Excellent references from previous managers highlight reliability."
+        }
+      ];
+
+      res.json({
+        jobId,
+        title: "Marketing Assistant",
+        candidates: candidateMatches,
+        totalApplications: candidateMatches.length,
+        newCandidates: candidateMatches.filter(c => c.status === 'new').length,
+        feedbackPending: candidateMatches.filter(c => c.status === 'feedback_pending').length,
+        shortlistStatus: 'feedback_required',
+        batchNumber: 1,
+        feedbackDeadline: "2025-01-25"
+      });
+    } catch (error) {
+      console.error('Error fetching candidate matches:', error);
+      res.status(500).json({ error: 'Failed to fetch candidate matches' });
+    }
+  });
+
+  // 2. Submit employer feedback for a candidate
+  app.post('/api/employer-feedback', async (req, res) => {
+    try {
+      const { userId, userRole } = req.session;
+      
+      if (!userId || userRole !== 'employer') {
+        return res.status(401).json({ message: 'Not authenticated as employer' });
+      }
+
+      const feedbackData = insertEmployerFeedbackSchema.parse(req.body);
+      
+      // Validate required fields
+      if (!feedbackData.decision || !feedbackData.strengths || !feedbackData.specificFeedback) {
+        return res.status(400).json({ 
+          error: 'Missing required fields',
+          details: 'Decision, strengths, and specific feedback are required'
+        });
+      }
+
+      if (!feedbackData.overallScore || !feedbackData.skillsScore || 
+          !feedbackData.behaviouralScore || !feedbackData.culturalFitScore) {
+        return res.status(400).json({ 
+          error: 'Missing scores',
+          details: 'All scores (1-10) are required'
+        });
+      }
+
+      // Add employer ID and timestamps
+      const newFeedback = {
+        ...feedbackData,
+        employerId: userId,
+        status: 'pending_review', // Pollen team will review before sharing
+        reviewStatus: 'pending',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      // In real implementation, insert into database
+      // const result = await db.insert(employerFeedback).values(newFeedback).returning();
+
+      // Update employer accountability - they provided feedback
+      // await updateEmployerAccountability(userId, feedbackData.candidateId);
+
+      res.json({ 
+        message: 'Feedback submitted successfully',
+        status: 'pending_review',
+        note: 'Your feedback will be reviewed by our team before being shared with the candidate'
+      });
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+      res.status(500).json({ error: 'Failed to submit feedback' });
+    }
+  });
+
+  // 3. Request additional candidates for a job
+  app.post('/api/jobs/:jobId/request-candidates', async (req, res) => {
+    try {
+      const { userId, userRole } = req.session;
+      const { jobId } = req.params;
+      
+      if (!userId || userRole !== 'employer') {
+        return res.status(401).json({ message: 'Not authenticated as employer' });
+      }
+
+      // Check if employer has pending feedback requirements
+      const pendingFeedback = await checkPendingFeedback(userId, jobId);
+      
+      if (pendingFeedback > 0) {
+        return res.status(400).json({ 
+          error: 'Feedback required',
+          message: `Please provide feedback on ${pendingFeedback} candidate(s) before requesting more`,
+          pendingCount: pendingFeedback
+        });
+      }
+
+      // Create new candidate request
+      const candidateRequest = {
+        jobId,
+        employerId: userId,
+        requestedAt: new Date(),
+        status: 'pending',
+        batchNumber: await getNextBatchNumber(jobId)
+      };
+
+      // In real implementation, insert into database
+      // await db.insert(candidateShortlists).values(candidateRequest);
+
+      res.json({ 
+        message: 'Request submitted successfully',
+        estimatedDelivery: '24 hours',
+        batchNumber: candidateRequest.batchNumber
+      });
+    } catch (error) {
+      console.error('Error requesting candidates:', error);
+      res.status(500).json({ error: 'Failed to request candidates' });
+    }
+  });
+
+  // 4. Download candidate profile (PDF)
+  app.get('/api/candidates/:candidateId/profile-pdf', async (req, res) => {
+    try {
+      const { userId, userRole } = req.session;
+      const { candidateId } = req.params;
+      
+      if (!userId || userRole !== 'employer') {
+        return res.status(401).json({ message: 'Not authenticated as employer' });
+      }
+
+      // In real implementation, verify employer has access to this candidate
+      // and generate PDF from candidate's profile data
+      
+      res.json({ 
+        message: 'PDF generation started',
+        downloadUrl: `/api/candidates/${candidateId}/profile.pdf`,
+        note: 'Download will be available shortly'
+      });
+    } catch (error) {
+      console.error('Error generating candidate PDF:', error);
+      res.status(500).json({ error: 'Failed to generate candidate profile PDF' });
+    }
+  });
+
+  // 5. Get employer accountability status
+  app.get('/api/employer-accountability', async (req, res) => {
+    try {
+      const { userId, userRole } = req.session;
+      
+      if (!userId || userRole !== 'employer') {
+        return res.status(401).json({ message: 'Not authenticated as employer' });
+      }
+
+      // Mock accountability data
+      const accountability = {
+        employerId: userId,
+        totalCandidatesReceived: 8,
+        feedbackProvided: 5,
+        feedbackPending: 3,
+        complianceScore: 62.5, // (5/8) * 100
+        nextDeadline: "2025-01-25",
+        status: feedback_pending > 0 ? 'action_required' : 'compliant',
+        restrictions: []
+      };
+
+      res.json(accountability);
+    } catch (error) {
+      console.error('Error fetching accountability:', error);
+      res.status(500).json({ error: 'Failed to fetch accountability status' });
+    }
+  });
+
+  // Helper functions for ATS
+  async function checkPendingFeedback(employerId: number, jobId: string): Promise<number> {
+    // In real implementation, query database for pending feedback
+    // Return number of candidates requiring feedback
+    return 1; // Mock: 1 pending feedback
+  }
+
+  async function getNextBatchNumber(jobId: string): Promise<number> {
+    // In real implementation, query database for highest batch number for this job
+    return 2; // Mock: next batch number
+  }
+
+  async function updateEmployerAccountability(employerId: number, candidateId: string) {
+    // In real implementation, update employer_accountability table
+    // Track that employer provided feedback for this candidate
+    console.log(`Updated accountability for employer ${employerId}, candidate ${candidateId}`);
+  }
+
+  // File upload endpoints for employer profile enhancement
+  app.post('/api/upload/company-logo', upload.single('logo'), (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+      
+      const fileUrl = `/attached_assets/${req.file.filename}`;
+      res.json({ 
+        success: true, 
+        url: fileUrl,
+        filename: req.file.filename 
+      });
+    } catch (error) {
+      console.error('Logo upload error:', error);
+      res.status(500).json({ error: 'Upload failed' });
+    }
+  });
+
+  app.post('/api/upload/cover-image', upload.single('coverImage'), (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+      
+      const fileUrl = `/attached_assets/${req.file.filename}`;
+      res.json({ 
+        success: true, 
+        url: fileUrl,
+        filename: req.file.filename 
+      });
+    } catch (error) {
+      console.error('Cover image upload error:', error);
+      res.status(500).json({ error: 'Upload failed' });
+    }
+  });
+
+  app.post('/api/upload/company-photos', upload.array('photos', 10), (req, res) => {
+    try {
+      if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ error: 'No files uploaded' });
+      }
+      
+      const uploadedFiles = (req.files as Express.Multer.File[]).map(file => ({
+        url: `/attached_assets/${file.filename}`,
+        filename: file.filename,
+        originalName: file.originalname
+      }));
+      
+      res.json({ 
+        success: true, 
+        files: uploadedFiles 
+      });
+    } catch (error) {
+      console.error('Photos upload error:', error);
+      res.status(500).json({ error: 'Upload failed' });
+    }
+  });
+
+  // Testimonial request endpoint
+  app.post("/api/testimonial-request", async (req, res) => {
+    try {
+      const { recipientEmail, recipientName, recipientRole, customMessage } = req.body;
+      
+      if (!recipientEmail || !recipientName) {
+        return res.status(400).json({ message: "Email and name are required" });
+      }
+
+      // Generate unique token for testimonial link
+      const requestToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      
+      // In a real implementation, you would:
+      // 1. Save request to database
+      // 2. Send email via SendGrid
+      // 3. Set expiration date (30 days)
+      
+      console.log("Testimonial request:", {
+        recipientEmail,
+        recipientName,
+        recipientRole,
+        customMessage,
+        requestToken
+      });
+
+      // Mock email sending (would use SendGrid in production)
+      if (process.env.SENDGRID_API_KEY) {
+        // Email sending logic would go here
+        console.log("Would send email via SendGrid to:", recipientEmail);
+      } else {
+        console.log("SendGrid not configured - email would be sent in production");
+      }
+      
+      res.json({ 
+        success: true, 
+        message: "Testimonial request sent successfully",
+        requestToken
+      });
+    } catch (error) {
+      console.error("Error sending testimonial request:", error);
+      res.status(500).json({ message: "Failed to send testimonial request" });
+    }
+  });
+
+  // ==================== NOTIFICATIONS API ENDPOINTS ====================
+
+  // Get notifications for current user (employer)
+  app.get("/api/notifications", async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const userNotifications = await db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.userId, userId))
+      .orderBy(desc(notifications.createdAt))
+      .limit(50);
+
+    res.json(userNotifications);
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    res.status(500).json({ error: "Failed to fetch notifications" });
+  }
+});
+
+// Mark notification as read
+app.patch("/api/notifications/:id/read", async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const notificationId = parseInt(req.params.id);
+    
+    await db
+      .update(notifications)
+      .set({ isRead: true })
+      .where(eq(notifications.id, notificationId))
+      .where(eq(notifications.userId, userId));
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error marking notification as read:", error);
+    res.status(500).json({ error: "Failed to mark notification as read" });
+  }
+});
+
+// Mark all notifications as read
+app.patch("/api/notifications/read-all", async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    await db
+      .update(notifications)
+      .set({ isRead: true })
+      .where(eq(notifications.userId, userId))
+      .where(eq(notifications.isRead, false));
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error marking all notifications as read:", error);
+    res.status(500).json({ error: "Failed to mark all notifications as read" });
+  }
+});
+
+// Delete notification
+app.delete("/api/notifications/:id", async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const notificationId = parseInt(req.params.id);
+    
+    await db
+      .delete(notifications)
+      .where(eq(notifications.id, notificationId))
+      .where(eq(notifications.userId, userId));
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting notification:", error);
+    res.status(500).json({ error: "Failed to delete notification" });
+  }
+});
+
+// Get unread notification count
+app.get("/api/notifications/unread-count", async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const unreadNotifications = await db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.userId, userId))
+      .where(eq(notifications.isRead, false));
+
+    res.json({ count: unreadNotifications.length });
+  } catch (error) {
+    console.error("Error fetching unread count:", error);
+    res.status(500).json({ error: "Failed to fetch unread count" });
+  }
+});
+
+  const httpServer = createServer(app);
+  return httpServer;
+}
+
+// Helper function to generate personality insights from DISC percentages
+function generatePersonalityInsightsFromDisc(discProfile: { red: number; yellow: number; green: number; blue: number }) {
+  const { red, yellow, green, blue } = discProfile;
+  
+  // Generate personality type name based on actual percentages
+  let overallType = "Balanced Professional";
+  let workstyle = "Adaptable and flexible";
+  let communication = "Context-aware and versatile";
+  let decisionmaking = "Situational and collaborative";
+  let strengths = ["Adaptability", "Balance", "Versatility"];
+  let environment = ["Flexible", "Varied", "Supportive"];
+  let roles = ["Versatile support", "Adaptable contributions", "Flexible collaboration"];
+  let motivators = ["Variety", "Balance", "Growth"];
+  let summary = "A well-rounded professional who adapts to different situations";
+  let description = "Thrives in diverse environments with balanced responsibilities";
+
+  // High red (Dominance) - Results-driven
+  if (red >= 50) {
+    overallType = red >= 70 ? "Results Powerhouse" : "Achievement-Focused Leader";
+    workstyle = "Direct and results-oriented";
+    communication = "Clear and assertive";
+    decisionmaking = "Quick and decisive";
+    strengths = ["Leadership", "Goal achievement", "Quick decisions", "Initiative", "Results focus"];
+    environment = ["Autonomous", "Fast-paced", "Results-focused", "Challenge-oriented"];
+    roles = ["Leading projects", "Driving results", "Making key decisions", "Pushing for outcomes"];
+    motivators = ["Achievement", "Control", "Competition", "Success", "Independence"];
+    summary = "A natural leader who drives results with determination";
+    description = "Excels in high-pressure environments where quick decisions and strong leadership are valued";
+  }
+  
+  // High yellow (Influence) - People-focused
+  else if (yellow >= 50) {
+    overallType = yellow >= 70 ? "People Champion" : "Collaborative Connector";
+    workstyle = "People-focused and collaborative";
+    communication = "Enthusiastic and engaging";
+    decisionmaking = "Consultative and optimistic";
+    strengths = ["Communication", "Team building", "Enthusiasm", "Relationship building", "Motivation"];
+    environment = ["Collaborative", "Social", "People-oriented", "Interactive"];
+    roles = ["Building relationships", "Team collaboration", "Communication", "Motivating others"];
+    motivators = ["Recognition", "Social interaction", "Team success", "Variety", "Positive impact"];
+    summary = "A natural connector who builds strong teams and relationships";
+    description = "Thrives in collaborative environments where people skills and communication are key";
+  }
+  
+  // High green (Steadiness) - Stability-focused
+  else if (green >= 50) {
+    // Check for secondary yellow (influence) to match assessment page logic
+    if (yellow >= 10) {
+      overallType = "The Team Builder";
+      workstyle = "Supportive and collaborative";
+      communication = "Patient and encouraging";
+      decisionmaking = "Consensus-building and inclusive";
+    } else {
+      overallType = green >= 70 ? "Reliable Foundation" : "Steady Supporter";
+      workstyle = "Steady and reliable";
+      communication = "Patient and diplomatic";
+      decisionmaking = "Careful and consensus-building";
+    }
+    strengths = ["Reliability", "Patience", "Teamwork", "Consistency", "Support"];
+    environment = ["Stable", "Supportive", "Team-oriented", "Predictable"];
+    roles = ["Supporting teams", "Maintaining consistency", "Building consensus", "Providing stability"];
+    
+    // Update motivators for Team Builder (green with yellow secondary)
+    if (yellow >= 10) {
+      motivators = ["Making a positive impact", "Building strong relationships", "Creating team harmony", "Supporting others' growth", "Recognition for helping"];
+      summary = "A natural team builder who brings people together and creates positive environments";
+      description = "Thrives in collaborative settings where relationship-building and team success are valued";
+    } else {
+      motivators = ["Security", "Helping others", "Team harmony", "Steady progress", "Trust"];
+      summary = "A dependable team player who provides stability and support";
+      description = "Excels in stable environments where consistency and team support are valued";
+    }
+  }
+  
+  // High blue (Conscientiousness) - Quality-focused
+  else if (blue >= 50) {
+    // Match behavioral assessment logic exactly - use Methodical Achiever for blue-red combination
+    if (red >= 30) {
+      overallType = "Methodical Achiever";
+      workstyle = "Analytical and detail-oriented";
+      communication = "Precise and thoughtful";
+      decisionmaking = "Research-based and systematic";
+      strengths = ["Analysis", "Attention to detail", "Quality focus", "Planning", "Accuracy"];
+    } else {
+      overallType = blue >= 70 ? "Quality Master" : "Analytical Professional";
+      workstyle = "Analytical and detail-oriented";
+      communication = "Precise and thoughtful";
+      decisionmaking = "Research-based and systematic";
+      strengths = ["Analysis", "Attention to detail", "Quality focus", "Planning", "Accuracy"];
+    }
+    environment = ["Structured", "Quality-focused", "Clear standards", "Analytical"];
+    roles = ["Quality assurance", "Analysis and planning", "Systems improvement", "Research"];
+    motivators = ["Quality", "Expertise", "Accuracy", "Knowledge", "Excellence"];
+    summary = "A detail-oriented professional who ensures quality and accuracy";
+    description = "Thrives in structured environments where precision and analytical thinking are valued";
+  }
+
+  return {
+    overallType,
+    workstyle,
+    communication,
+    decisionmaking,
+    strengths,
+    environment,
+    roles,
+    motivators,
+    summary,
+    description
+  };
+}
+
+  // ==================== NOTIFICATIONS API ENDPOINTS ====================
+
+  // Get notifications for current user (employer)
+  app.get("/api/notifications", async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const userNotifications = await db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.userId, userId))
+      .orderBy(desc(notifications.createdAt))
+      .limit(50);
+
+    res.json(userNotifications);
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    res.status(500).json({ error: "Failed to fetch notifications" });
+  }
+});
+
+// Mark notification as read
+app.patch("/api/notifications/:id/read", async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const notificationId = parseInt(req.params.id);
+    
+    await db
+      .update(notifications)
+      .set({ 
+        isRead: true,
+        updatedAt: new Date()
+      })
+      .where(eq(notifications.id, notificationId))
+      .where(eq(notifications.userId, userId));
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error marking notification as read:", error);
+    res.status(500).json({ error: "Failed to update notification" });
+  }
+});
+
+// Mark all notifications as read
+app.patch("/api/notifications/read-all", async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    await db
+      .update(notifications)
+      .set({ 
+        isRead: true,
+        updatedAt: new Date()
+      })
+      .where(eq(notifications.userId, userId))
+      .where(eq(notifications.isRead, false));
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error marking all notifications as read:", error);
+    res.status(500).json({ error: "Failed to update notifications" });
+  }
+});
+
+// Create notification (internal function for system use)
+app.post("/api/notifications", async (req, res) => {
+  try {
+    const validatedData = insertNotificationSchema.parse(req.body);
+    
+    const [newNotification] = await db
+      .insert(notifications)
+      .values(validatedData)
+      .returning();
+
+    res.status(201).json(newNotification);
+  } catch (error) {
+    console.error("Error creating notification:", error);
+    res.status(500).json({ error: "Failed to create notification" });
+  }
+});
+
+// Delete notification
+app.delete("/api/notifications/:id", async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const notificationId = parseInt(req.params.id);
+    
+    await db
+      .delete(notifications)
+      .where(eq(notifications.id, notificationId))
+      .where(eq(notifications.userId, userId));
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting notification:", error);
+    res.status(500).json({ error: "Failed to delete notification" });
+  }
+});
+
+// Get unread notification count
+app.get("/api/notifications/unread-count", async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const unreadNotifications = await db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.userId, userId))
+      .where(eq(notifications.isRead, false));
+
+    res.json({ count: unreadNotifications.length });
+  } catch (error) {
+    console.error("Error fetching unread count:", error);
+    res.status(500).json({ error: "Failed to fetch unread count" });
+  }
+});
+});
+
+  const httpServer = createServer(app);
+  return httpServer;
+}

@@ -1,0 +1,91 @@
+/* PRINT STYLESHEET FOR CANDIDATE PROFILE */
+@media print {
+  /* Basic reset */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    background: transparent !important;
+    color: #000 !important;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    line-height: 1.4;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Page margins */
+  @page {
+    margin: 1cm;
+  }
+
+  /* Hide navigation, menu buttons, and anything interactive */
+  nav, header, footer, .navbar, .menu-toggle, .sidebar, .download-button, button {
+    display: none !important;
+  }
+
+  /* General containers */
+  .container, .wrapper, .main-content, .profile-wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Prevent page breaks within blocks */
+  .section, .profile-section, .card, .box, .profile-card, .info-block {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    break-after: auto;
+  }
+
+  /* Keep consistent spacing and remove large gaps */
+  .card, .section, .info-block {
+    margin-bottom: 12px !important;
+    padding: 12px !important;
+    border: 1px solid #eee !important;
+    border-radius: 6px !important;
+  }
+
+  /* Remove grid or flex layout to prevent split columns */
+  .row, .columns, .grid {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  /* Make text blocks full-width */
+  .column, .half, .third, .profile-col {
+    width: 100% !important;
+    display: block !important;
+  }
+
+  /* Optional: remove backgrounds from colored elements like badges */
+  .badge, .tag, .pill {
+    background: #eee !important;
+    color: #000 !important;
+    border-radius: 4px !important;
+  }
+
+  /* Optional: shrink headings and increase contrast */
+  h1, h2, h3, h4 {
+    font-size: 16px !important;
+    color: #111 !important;
+  }
+
+  /* Hide any background gradient headers or sticky bars */
+  .gradient-header, .sticky-header, .sticky {
+    display: none !important;
+  }
+
+  /* Hide footer links and print URLs */
+  a[href^="http"]:after {
+    content: "" !important;
+  }
+
+  /* Avoid unnecessary blank pages */
+  html, body {
+    page-break-after: auto;
+    page-break-before: auto;
+  }
+}

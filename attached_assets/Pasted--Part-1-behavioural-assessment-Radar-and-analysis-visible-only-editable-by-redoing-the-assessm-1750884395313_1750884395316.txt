@@ -1,0 +1,56 @@
+
+Part 1 - behavioural assessment - Radar and analysis visible, only editable by redoing the assessment
+Part 2 - Your story - ALL visible and editable in standard profile view
+What’s your idea of the perfect job - visible in employer view profile
+In 3 words or phrases, how would your friends describe you? - visible in employer view profile
+In 3 words or phrases, how would your teachers describe you? - visible in employer view profile
+What do you like doing that makes you happy? - visible in employer view profile
+Is there anything in life that frustrates you? - visible in employer view profile
+Is there anything you've done you feel really proud of? - visible in employer view profile
+Part 3 - Practical - ALL visible and editable  in standard profile view
+Visa status question - VISIBLE in employer view profile 
+Employment type preferences (full time, part time, temporary, permanent, internship, freelance / contract, apprenticeship, other)- NOT visible in employer view profile 
+What working arrangements would you consider? - NOT visible in employer view profile 
+Where would you like to work (if select fully remote previously, skip this) - NOT visible in employer view profile 
+What are your minimum salary expectations? - NOT visible in employer view profile 
+When are you looking to start a job? - NOT visible in employer view profile 
+Do any of the following apply to you? E.g. driving license, speaking languages - NOT visible in employer view profile 
+Part 4 - Interests / preferences - ALL visible and editable 
+What were your favourite subjects during education? VISIBLE in employer view profile 
+Have you done any courses or self learning you'd like to share?  - NOT visible in employer view profile 
+Are there any types of roles that have caught your eye already? VISIBLE in employer view profile 
+Which industries interest you most?  - NOT visible in employer view profile 
+Size of company  - NOT visible in employer view profile 
+what type of company culture do you think you'd prefer?  - NOT visible in employer view profile 
+Part 5 - Education - ALL visible and editable (but all NOT visible in employer view)
+What's the highest level of qualification you have received, or are currently working towards?
+What subject(s)
+Institution
+When did / will you finish education
+Part 6 - Personal Info - ALL NOT VISIBLE IN ANY VIEW 
+Pronouns
+Gender Identity
+Ethnicity 
+What type of upbringing did you have? (amend wording) - city / rural / town or suburb / moved around
+Do you identify as disabled or having a disability?
+Neurodivergence?
+Mental health challenges?
+Would you consider yourself to be from a low income household?
+Were you eligible for Free School Meals while at school?
+If you attend or attended university, were you the first generation in your family to go to university?
+Are you a first or second generation immigrant?
+Date of Birth 
+Are you part of the LGBTQIA+ community?
+Part 7 - Job Search experience - ALL NOT VISIBLE IN ANY VIEW 
+What is your current employment status?
+How long have you been looking for a job?
+How many jobs do you apply to a week?
+What factors do you consider important when applying for a job?
+What were the main reasons you signed up to Pollen?
+What frustrates you the most about the traditional job seeking process?
+Could you elaborate more on your experiences of looking for a job?
+Part 8 - Other - include only Q1 in standard profile view
+Are there any reasonable adjustments we need to make for you? - VISIBLE in STANDARD PROFILE VIEW WITH OTHER PRACTICAL ASPECTS
+How did you hear about us - NOT VISIBLE IN ANY VIEW 
+
+Additional item visible in STANDARD PROFILE AND PROFILE EMPLOYER VIEW IS MEMBER OF POLLEN SINCE… (SIGN UP DATE)

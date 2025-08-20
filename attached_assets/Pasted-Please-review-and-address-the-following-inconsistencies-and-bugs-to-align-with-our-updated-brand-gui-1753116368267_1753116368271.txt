@@ -1,0 +1,93 @@
+Please review and address the following inconsistencies and bugs to align with our updated brand guidelines:
+
+1. Logo Implementation
+Replace all instances of the old purple “P” logo with the new honeycomb logo (attached: honeycomb.png) in both the header and footer of the landing page and across the platform.
+
+Remove or replace any legacy iconography that doesn’t match our current visual identity.
+
+2. Font & Typography
+Ensure consistent use of:
+
+Sora for all headings
+
+Poppins for all body text
+
+Verify that no legacy typefaces (e.g. the previous serif-style heading font) are still rendering anywhere.
+
+3. Brand Colours
+Primary Palette
+
+Yellow: #ffde59
+
+Pink: #E2007A
+
+Off-black: #272727
+
+Accent/Functional Colours (Fixed Use Only)
+These are only to be used in the DISC chart and key UI status elements:
+
+Red: #FF8A8A — Dominance
+
+Blue: #5A8CFF — Conscientiousness
+
+Yellow: #FFE174 — Influence
+
+Green: #8ED68F — Steadiness
+
+UI Consistency Rules
+
+Pinks should be used sparingly for CTAs, icons, and headings, not as the primary background.
+
+Yellow should be used:
+
+In hover states
+
+For notifications
+
+In light backgrounds for cards
+
+Ensure text remains legible over yellow or light backgrounds (use #272727 or darker).
+
+Re-audit pages like “Community” and “Messages” for colour overuse or low contrast.
+
+4. Component Styling Bugs
+Some cards still appear in purple — ensure they're restyled using the appropriate yellow or light grey background.
+
+Review the “My Applications” and “Messages” pages — there are inconsistencies in button colours, badge styles, and component backgrounds.
+
+Fix the user icon (currently purple). It should either:
+
+Match the honeycomb style, or
+
+Use a neutral base (e.g. light grey, white) with text or gradient styling matching the Pollen theme.
+
+On hover/focus, ensure consistent transitions and semantic feedback.
+
+5. Language Localisation
+Update all text to use UK English spelling, e.g.:
+
+“behavioural” not “behavioral”
+
+“personalised” not “personalized”
+
+Check for hardcoded copy or config defaults that may be defaulting to US spellings.
+
+6. Design Philosophy Summary
+Stick to a clean, minimal look — the goal is to appear modern and human while still trustworthy and tech-forward.
+
+Use colour sparingly to draw attention, not overwhelm.
+
+The design should feel like a unified system — avoid ad-hoc styling for individual cards, buttons, or banners.
+
+✅ Deliverables:
+Please confirm:
+
+All pages are updated accordingly
+
+No purple (#6C63FF or related) remains in the live UI
+
+The logo and fonts are fully swapped out
+
+We are using consistent hover/active states across buttons
+
+UI contrast meets accessibility standards

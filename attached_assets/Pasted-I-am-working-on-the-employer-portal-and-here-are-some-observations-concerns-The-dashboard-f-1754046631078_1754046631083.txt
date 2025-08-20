@@ -1,0 +1,58 @@
+I am working on the employer portal and here are some observations / concerns: 
+
+- The dashboard feels poorly designed and there's too much going on at the top of the page. I just want to keep the portal really simple with the following functionality:
+
+ - a user can set up their profile if they haven't already done so 
+- they can post a new job 
+- they can review / edit / pause / close jobs they already have live 
+- they have review applicants on a total basis for all jobs, with the freedom to filter according to the job and the candidate status and also from within individual jobs (but the view would be the same, just auto-filtered if navigating from a particular job)
+ - simple navigation to a candidate profile, which incorporates content from the database including: 
+
+Name, Pronoun, availability 
+
+PollenTeam Insights
+Pollen Team assessment blurb 
+Pollen Team Interview Performance 
+Important Information 
+Visa status
+Interview support 
+Profile
+Behavioural Profile & Work Style:
+Behavioural Headline e.g. “The Social Butterfly” 
+Behavioural Summary e.g. “Natural communicator who builds strong relationships and energises teams.”
+Behavioural Description e.g. - “Sarah brings natural collaborative energy and enthusiasm to work, thriving in team environments where communication and relationships are valued. She excels in roles that involve building connections, motivating others, and creating positive team dynamics. Her engaging communication style makes her particularly effective at facilitating collaboration and maintaining team morale.”
+DISC % breakdown
+Short DISC statement e.g. “Enthusiastic and people-focused”
+How They Work
+Communication Style 
+Decision Making
+Career Motivators
+Work Style Strengths
+Personal Insights
+Perfect Job Is…
+Most Happy when…
+Described as
+by Friends…
+by Teachers…
+Most Proud of…
+Interested in Roles in 
+Industry Interests
+Key Strengths (x3) 
+Community & Engagement 
+Proactivity Score
+Community Achievements 
+References 
+
+Skills
+Skills Assessment Scores
+
+Applicant tracking needs to be made clearer and simpler - we need to seamlessly give the employer the ability to communicate with the candidate, book interviews (by providing their own calendar availability which the job seeker can then select a slot from), provide updates (e.g. are they progressing to another stage or not progressing).
+we also need to provide the functionality for the employer to provide feedback (additionally it would also be helpful if there's an element of standardisation in how the user assesses the interview e.g. out of 5 score across different areas, but also a notes section where they can just input their thoughts and the AI helps to transform this into a constructive feedback statement for the job seeker). I am not clear where this feedback mechanism would sit in the process. 
+Insights dashboard also helps the employer to understand more about feedback from candidates, hiring stats, etc. I am broadly happy with this page.  
+The job posting process is also a work in progress, but I want to delve into that separately, as a whole different workflow. 
+
+Right now the focus is getting the UX improved / simplified, and the ATS system working. 
+
+Worth noting that we recently made a change to move a sidebar navigation to the top, such that we could build the functionality for the candidate summary table to appear side by side with the candidate profile, such that the user could either toggle next or previous, or navigate from the full summary table but the problem is that the correct candidate information isn't being displayed, and it still feels clunky (is the text too large?!) 
+
+Can you make some suggestions for how we fix the UX / UI issues and a project plan for this. 

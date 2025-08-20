@@ -1,0 +1,118 @@
+<svg width="800" height="900" viewBox="0 0 800 900" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="900" fill="#f8fafc"/>
+  
+  <!-- Header -->
+  <rect x="0" y="0" width="800" height="70" fill="#1e293b"/>
+  <text x="40" y="45" font-family="system-ui, sans-serif" font-size="22" font-weight="600" fill="white">Your Ideal Candidate Profile</text>
+  
+  <!-- Main Content Card -->
+  <rect x="40" y="90" width="720" height="770" rx="16" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Hero Section -->
+  <rect x="60" y="110" width="680" height="120" rx="12" fill="#f1f5f9"/>
+  
+  <!-- Target Icon -->
+  <circle cx="110" cy="150" r="25" fill="#3b82f6"/>
+  <text x="105" y="157" font-family="system-ui, sans-serif" font-size="16" fill="white">🎯</text>
+  
+  <!-- Title and Description -->
+  <text x="150" y="145" font-family="system-ui, sans-serif" font-size="20" font-weight="700" fill="#1e293b">Marketing Coordinator</text>
+  <text x="150" y="165" font-family="system-ui, sans-serif" font-size="14" fill="#64748b">Based on your requirements for client communication and project coordination</text>
+  
+  <!-- Confidence Score -->
+  <rect x="530" y="130" width="180" height="60" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/>
+  <text x="550" y="150" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#15803d">Role Alignment Score</text>
+  <text x="580" y="175" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#15803d">94%</text>
+  
+  <!-- One-Line Summary -->
+  <text x="150" y="190" font-family="system-ui, sans-serif" font-size="16" font-weight="500" fill="#374151">A naturally organized communicator who thrives in client-facing environments</text>
+  
+  <!-- Top 3 Key Traits -->
+  <text x="80" y="270" font-family="system-ui, sans-serif" font-size="18" font-weight="700" fill="#1e293b">Key Strengths for This Role</text>
+  
+  <!-- Trait 1 -->
+  <rect x="80" y="290" width="200" height="80" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+  <circle cx="110" cy="315" r="12" fill="#f59e0b"/>
+  <text x="107" y="320" font-family="system-ui, sans-serif" font-size="12" fill="white">💬</text>
+  <text x="130" y="315" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#92400e">Client Relationship Builder</text>
+  <text x="90" y="335" font-family="system-ui, sans-serif" font-size="11" fill="#92400e">Naturally develops rapport while</text>
+  <text x="90" y="350" font-family="system-ui, sans-serif" font-size="11" fill="#92400e">maintaining professional boundaries</text>
+  
+  <!-- Trait 2 -->
+  <rect x="300" y="290" width="200" height="80" rx="10" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
+  <circle cx="330" cy="315" r="12" fill="#3b82f6"/>
+  <text x="327" y="320" font-family="system-ui, sans-serif" font-size="12" fill="white">⚡</text>
+  <text x="350" y="315" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#1e40af">Proactive Communicator</text>
+  <text x="310" y="335" font-family="system-ui, sans-serif" font-size="11" fill="#1e40af">Anticipates issues and provides</text>
+  <text x="310" y="350" font-family="system-ui, sans-serif" font-size="11" fill="#1e40af">regular updates without prompting</text>
+  
+  <!-- Trait 3 -->
+  <rect x="520" y="290" width="200" height="80" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/>
+  <circle cx="550" cy="315" r="12" fill="#16a34a"/>
+  <text x="547" y="320" font-family="system-ui, sans-serif" font-size="12" fill="white">🎯</text>
+  <text x="570" y="315" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#15803d">Quality-Conscious</text>
+  <text x="530" y="335" font-family="system-ui, sans-serif" font-size="11" fill="#15803d">Takes personal pride in error-free,</text>
+  <text x="530" y="350" font-family="system-ui, sans-serif" font-size="11" fill="#15803d">professional deliverables</text>
+  
+  <!-- DISC Profile Section -->
+  <text x="80" y="410" font-family="system-ui, sans-serif" font-size="18" font-weight="700" fill="#1e293b">Behavioral Profile</text>
+  
+  <!-- DISC Radar Chart Placeholder -->
+  <circle cx="200" cy="480" r="80" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+  <circle cx="200" cy="480" r="60" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="200" cy="480" r="40" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="200" cy="480" r="20" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- DISC Labels -->
+  <text x="195" y="415" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#ef4444">D</text>
+  <text x="270" y="485" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#eab308">I</text>
+  <text x="195" y="555" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#22c55e">S</text>
+  <text x="125" y="485" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#3b82f6">C</text>
+  
+  <!-- DISC Plot Points -->
+  <circle cx="200" cy="460" r="3" fill="#ef4444"/>
+  <circle cx="248" cy="480" r="3" fill="#eab308"/>
+  <circle cx="200" cy="452" r="3" fill="#22c55e"/>
+  <circle cx="164" cy="480" r="3" fill="#3b82f6"/>
+  
+  <!-- DISC Percentages -->
+  <text x="320" y="430" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#1e293b">Perfect for This Role:</text>
+  <text x="320" y="450" font-family="system-ui, sans-serif" font-size="12" fill="#22c55e">35% Steadiness - Reliable client relationships</text>
+  <text x="320" y="470" font-family="system-ui, sans-serif" font-size="12" fill="#eab308">30% Influence - Strong communication skills</text>
+  <text x="320" y="490" font-family="system-ui, sans-serif" font-size="12" fill="#3b82f6">25% Conscientiousness - Quality focused</text>
+  <text x="320" y="510" font-family="system-ui, sans-serif" font-size="12" fill="#ef4444">10% Dominance - Collaborative approach</text>
+  
+  <!-- Essential Skills -->
+  <text x="80" y="590" font-family="system-ui, sans-serif" font-size="18" font-weight="700" fill="#1e293b">Essential Skills Match</text>
+  
+  <!-- Skills Pills -->
+  <rect x="80" y="610" width="140" height="28" rx="14" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
+  <text x="90" y="628" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#1e40af">Social Media Mgmt</text>
+  
+  <rect x="230" y="610" width="120" height="28" rx="14" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
+  <text x="240" y="628" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#1e40af">Client Relations</text>
+  
+  <rect x="360" y="610" width="130" height="28" rx="14" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
+  <text x="370" y="628" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#1e40af">Project Coordination</text>
+  
+  <rect x="500" y="610" width="110" height="28" rx="14" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
+  <text x="510" y="628" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#1e40af">Quality Control</text>
+  
+  <!-- Growth Potential -->
+  <text x="80" y="680" font-family="system-ui, sans-serif" font-size="18" font-weight="700" fill="#1e293b">Growth Potential</text>
+  
+  <text x="80" y="705" font-family="system-ui, sans-serif" font-size="14" fill="#22c55e">🌱 Learning Agility</text>
+  <text x="230" y="705" font-family="system-ui, sans-serif" font-size="14" fill="#22c55e">🌱 Initiative Taking</text>
+  <text x="380" y="705" font-family="system-ui, sans-serif" font-size="14" fill="#22c55e">🌱 Professional Development</text>
+  
+  <!-- Red Flags (Compact) -->
+  <text x="80" y="750" font-family="system-ui, sans-serif" font-size="16" font-weight="600" fill="#ef4444">Avoid: Poor multitaskers, communication-averse candidates</text>
+  
+  <!-- Action Buttons -->
+  <rect x="450" y="780" width="240" height="45" rx="8" fill="#3b82f6"/>
+  <text x="540" y="807" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="white">Review Challenge Draft →</text>
+  
+  <rect x="200" y="780" width="120" height="45" rx="8" fill="white" stroke="#d1d5db" stroke-width="1"/>
+  <text x="230" y="807" font-family="system-ui, sans-serif" font-size="14" fill="#374151">← Refine</text>
+</svg>

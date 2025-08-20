@@ -1,0 +1,87 @@
+You're building a revised landing page for Pollen Careers.
+
+**Purpose:**  
+This is the main landing page and is primarily targeted at **job seekers**. It should immediately communicate Pollen’s value, feel warm and energetic, and drive users into the **interactive job seeker demo** with **zero friction**.
+
+**Key changes:**
+- Remove the role dropdown – the “Explore Demo” button should go directly to the job seeker demo.
+- Deprioritise employer messaging, but still provide a small CTA for employers to enquire.
+- Hide admin access from the main page (accessible only via direct URL like /admin).
+- Design should be clean, mobile-friendly, and highlight trust and social impact.
+
+---
+
+### ✨ Page Content
+
+**Headline:**  
+**Discover Your Strengths. Unlock New Opportunities.**
+
+**Subheading:**  
+A skills-first hiring platform helping first-time job seekers land real roles with great employers — no CV required.
+
+**CTA Button (primary, above the fold):**  
+→ **Explore Demo**  
+(Sends user straight to job seeker demo experience)
+
+---
+
+### Feature Cards (4 across)
+
+1. **Community Support**  
+*Connect through events, masterclasses, and mentorship.*  
+
+2. **Skills Verification**  
+*Prove your strengths with real-world challenges.*  
+
+3. **Behavioural Insights**  
+*Understand how you work best and where you'll thrive.*  
+
+4. **Entry-Level Friendly Employers**  
+*Get matched with inclusive companies that hire for potential.*
+
+---
+
+### Section: “Why Pollen Works”
+
+**For First-Time Job Seekers**  
+✅ Build skills and confidence through challenges  
+✅ Get personalised insights to guide your journey  
+✅ Access a supportive community  
+✅ Earn points and recognition for your progress  
+
+---
+
+### Section: “Start Your Journey”
+
+**Ready to explore what you're capable of?**  
+💡 *No CVs. No pressure. Just your skills and potential.*  
+
+**[Explore Demo]** (Primary button – same as above)
+
+**Light CTA for employers (small text below):**  
+Are you an employer? [Join our employer community →](#employer-form)
+
+---
+
+### Footer**
+
+Include:
+- Pollen logo  
+- Tagline: *Empowering careers through skills-first hiring and community support*  
+- Footer nav (if any): Privacy, Terms, Contact
+
+---
+
+### Additional Notes
+
+- The employer enquiry form should be at `/employers` and include:
+   - Headline: *Hire with Confidence. Hire with Pollen.*  
+   - CTA: *Book a Call* or *Join Employer Community*  
+   - Light copy on verified candidates, culture alignment, and retention
+- The admin panel should only be accessible via `/admin` and not linked from anywhere
+
+---
+
+Design tone: Confident, warm, modern, and simple. Use plenty of white space, soft brand colors (yellow/pink), and clean icons.
+
+Font stack: Headings — Sora. Body — Poppins.

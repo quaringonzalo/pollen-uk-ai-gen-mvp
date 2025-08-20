@@ -1,0 +1,125 @@
+You're building a revised landing page for Pollen Careers.
+
+**Purpose:**
+This is the main landing page and is primarily targeted at **job seekers**. It should immediately communicate Pollen’s value, feel warm and energetic, and drive users into the **interactive job seeker demo** with **zero friction**.
+
+**Key changes:**
+
+* Remove the role dropdown – the “Explore Demo” button should go directly to the job seeker demo.
+* Deprioritise employer messaging, but still provide a CTA for employers to go to separate landing page and enquire.
+* Hide admin access from the main page (accessible only via direct URL /admin).
+* Design should be clean, mobile-friendly, and highlight trust and social impact.
+
+---
+
+### ✨ Page Content
+
+**Headline:**
+**Your career starts here — no CV required.**
+
+**Subheading:**
+Discover your strengths and connect with inclusive employers who look beyond the CV. Pollen helps you get hired through real skills, behavioural insights, and community support.
+
+**CTA Button (primary, above the fold):**
+→ **Explore Demo**
+(Sends user straight to job seeker demo experience)
+
+**Light CTA for employers (top-right nav link):**
+Small link: *Employers?* [Learn More →](/employers)
+
+**Secondary CTA for employers (directly below the fold):**
+**Want to hire more inclusively?** [Join our employer community →](/employers)
+
+---
+
+### 🔍 Feature Cards (4 across)
+
+1. **Community Support**
+   *Get access to events, mentors, and actual humans who want to help you grow.*
+
+2. **Skills Verification**
+   *Prove your strengths with hands-on challenges designed to show—not just tell.*
+
+3. **Behavioural Insights**
+   *Understand your unique work style and what environments help you thrive.*
+
+4. **Access to Inclusive Employers**
+   *Be seen by companies committed to fair hiring and potential-driven growth.*
+
+---
+
+### 🛠 How It Works
+
+1. **Create Your Profile**
+   Tell us about your interests, strengths and goals.
+
+2. **Prove What You’re Great At**
+   Complete skills-based challenges and share how you work best.
+
+3. **Get Matched with Employers**
+   Receive opportunities from employers who hire for potential. Even if you're not matched right away, you’ll receive feedback and guidance to improve your chances next time.
+
+---
+
+### 💬 Success Stories
+
+> "From the very first task-based assignment, I knew I had found something special. The team’s feedback and communication were exceptional, and their friendliness and supportiveness made the experience even better. Thanks to Pollen, my confidence during my job search has significantly improved. In fact, I found my current job advertised through Pollen. I can’t recommend Pollen enough – they truly are a game-changer." — *Gabby*
+
+> "During an interview, I was once told that my CV poorly reflected who I am as a person and the value I could bring to a role. It became clear that the issue wasn't my skills or the demand for someone like me – it was miscommunication. That’s where Pollen made a difference for me. They gave me an opportunity to show my potential in real-life scenarios directly relevant to the role." — *Sanelisa*
+
+---
+
+### 📰 As Featured In
+
+Featured in: **BBC**, **The Times**, **FastCompany**, **Business Insider**, **Stylist**, **New York Post**
+
+---
+
+### 🚀 Start Your Journey
+
+**Ready to explore what you're capable of?**
+💡 *No CVs. No pressure. Just your skills and potential.*
+
+**\[Explore Demo]** (Primary button – same as above)
+
+---
+
+### 🏢 Employers – Learn More
+
+Want to hire more inclusively and access top early-career talent with verified skills? Pollen helps you reduce bias, improve retention, and make hiring more human.
+
+**[Go to Employer Page →](/employers)**
+
+---
+
+### Footer
+
+Include:
+
+* Pollen logo
+* Tagline: *Find where you belong.*
+* Footer nav (if any): Privacy, Terms, Contact
+
+---
+
+### Additional Notes
+
+* The employer enquiry form should be at `/employers` and include:
+
+  * Headline: *Hire with Confidence. Hire with Pollen.*
+  * CTA: *Book a Call* or *Join Employer Community*
+  * Light copy on verified candidates, culture alignment, and retention
+* The admin panel should only be accessible via `/admin` and not linked from anywhere
+
+---
+
+**Design tone:** Confident, warm, modern, and simple. Use plenty of white space, soft brand colors (yellow/pink), and clean icons.
+
+**Font stack:** Headings — Sora. Body — Poppins.
+
+---
+
+**SEO Optimization Notes:**
+
+* Keyword-optimised phrases included: "skills-first hiring", "inclusive employers", "early-career talent", "get hired without a CV", "verified job skills", "entry-level jobs platform", "job seeker community".
+* Meta descriptions and titles should echo the headline: *"Start your career with verified skills — Pollen Careers helps you get hired, no CV required."*

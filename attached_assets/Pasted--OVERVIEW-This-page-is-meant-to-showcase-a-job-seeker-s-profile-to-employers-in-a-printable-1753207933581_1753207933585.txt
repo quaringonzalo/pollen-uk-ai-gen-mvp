@@ -1,0 +1,40 @@
+// ✅ OVERVIEW:
+// This page is meant to showcase a job seeker's profile to employers in a printable/previewable format.
+// Right now, the content is too light in key insight areas and inconsistent in design hierarchy.
+
+/////////////////////
+// 🔧 CHANGES NEEDED:
+/////////////////////
+
+// ✅ 1. Include Key Behavioural Insights:
+-- Add the following *explicitly* (if available from assessment results):
+   • Communication Style (e.g. “Patient and encouraging” — expand to 1-2 sentences if possible)
+   • Decision-Making Style (e.g. “Analytical and risk-averse” or “Collaborative and intuitive”)
+   • Career Motivators (Top 2, if selected)
+   • Compatible Role Types (Top 2-3 from system mapping)
+
+-- These can be placed in a new section called: “How I Work” or “Behavioural Preferences”
+-- Layout: 2-column grid or full-width list-style with subtle icons or tags
+
+// ✅ 2. Remove Redundant Bullet Points:
+-- The bullet-pointed “Key Strengths” under DISC breakdown are too vague/repetitive.
+-- Delete these (e.g. "Reliability", "Patience") unless we turn them into real paragraphs (already done in the Key Strengths section on the right).
+
+// ✅ 3. Fix Layout Logic:
+-- “Key Strengths” on the right is strong: leave this as-is, but consider limiting to top 2 or 3 and allow full-width display on smaller screens.
+
+-- Remove visual duplication across left and right if data already exists elsewhere.
+
+-- Ensure “Ideal Work Environment” and “Interested Role Types” are clearly grouped under a “Career Interests” or “Work Preferences” block near the bottom of the left column (or in a full-width row).
+
+// ✅ 4. Optional Improvements:
+-- Add headline summary: A short generated line like “Reliable, team-focused communicator who thrives in collaborative environments.”
+-- If no references are available, either hide the section or show a greyed-out prompt: “No references added yet.”
+
+// ✅ 5. Style Guide:
+-- Use consistent padding: `p-6` for all cards
+-- Border radius: `rounded-xl`
+-- Use same color scheme and fonts as `/profile` tab
+-- Max width: `max-w-6xl mx-auto px-6`
+-- Font sizes: `text-lg` for section headers, `text-sm` for supporting text
+

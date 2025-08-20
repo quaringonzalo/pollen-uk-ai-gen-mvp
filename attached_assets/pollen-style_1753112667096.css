@@ -1,0 +1,129 @@
+
+/* -----------------------------------------------
+   Pollen Platform Stylesheet: pollen-style.css
+   Fonts: Sora (headings, buttons), Poppins (body)
+   Brand Colors: Yellow, Bold Pink, Off-Black, Fixed DISC
+------------------------------------------------- */
+
+/* Import Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&family=Sora:wght@500;600;700&display=swap');
+
+/* Global Typography */
+body {
+  font-family: 'Poppins', sans-serif;
+  color: #272727;
+  background-color: #ffffff;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Sora', sans-serif;
+  font-weight: 600;
+  color: #272727;
+  margin: 0.5em 0;
+}
+
+/* Font Utility Classes */
+.font-sora {
+  font-family: 'Sora', sans-serif;
+}
+
+.font-poppins {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Color Variables */
+:root {
+  --pollen-yellow: #ffde59;
+  --pollen-pink: #E2007A;
+  --pollen-black: #272727;
+  --pollen-white: #ffffff;
+  --pollen-turquoise: #a0f8ee;
+  --pollen-soft-yellow: #fffce1;
+  --pollen-soft-pink: #fff0f6;
+  --pollen-gray-bg: #f9f9f9;
+
+  /* DISC Fixed Colors */
+  --disc-red: #ff4d4f;
+  --disc-yellow: #ffec3d;
+  --disc-green: #52c41a;
+  --disc-blue: #1890ff;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--pollen-yellow);
+  color: var(--pollen-pink);
+  font-family: 'Sora', sans-serif;
+  font-weight: 600;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  background-color: #ffe766;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background-color: var(--pollen-pink);
+  color: var(--pollen-white);
+}
+
+/* DISC Profile Color Blocks */
+.disc-dominance {
+  background-color: var(--disc-red);
+  color: white;
+  padding: 1em;
+  border-radius: 8px;
+}
+
+.disc-influence {
+  background-color: var(--disc-yellow);
+  color: #272727;
+  padding: 1em;
+  border-radius: 8px;
+}
+
+.disc-steadiness {
+  background-color: var(--disc-green);
+  color: white;
+  padding: 1em;
+  border-radius: 8px;
+}
+
+.disc-conscientiousness {
+  background-color: var(--disc-blue);
+  color: white;
+  padding: 1em;
+  border-radius: 8px;
+}
+
+/* Card Example */
+.card {
+  background-color: var(--pollen-white);
+  border: 1px solid #eaeaea;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin: 1em 0;
+}
+
+/* Logo Styling */
+.logo {
+  height: 40px;
+  width: auto;
+  background-color: var(--pollen-yellow);
+}
+
+/* Stat box flexibility */
+.stat-box-blue { background-color: #457eff; color: white; }
+.stat-box-green { background-color: #00c26e; color: white; }
+.stat-box-purple { background-color: #b144f7; color: white; }
+.stat-box-orange { background-color: #ff7c3e; color: white; }
+
