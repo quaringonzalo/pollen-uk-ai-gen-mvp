@@ -1,0 +1,86 @@
+12 sprints - 3 meses - Alcance MVP 
+- Entregables -> 
+
+Landing
+- Job Seeker access
+- Admin access
+
+Job Seeker
+- Home
+- My Profile
+    - Public View (Employer View)
+    - Personal Insights
+    - References ❌
+    - Behavioural
+        - Porcentajes por color de respuesta
+        - Your Personalised Work Style Summary
+        - Key Strengths
+        - Ideal Work Environment
+        - How You Make Decisions
+    - Complete Profile sections
+        - Work Style
+        - Personal Story
+        - Practical Stuff
+        - What lights you up
+        - Your learning journey
+        - Supporting Diversity
+        - Helps us help you
+    - Recommended Job Opportunities
+    - Recent Applications
+    - Personal Insights
+- Notifications 
+- Iniciar sesión
+- Saved items ⚠︎ (Validar contenido)
+- Registrarse con SSO
+- Community - Static content
+- Companies
+    - Listar compañías
+    - Ver perfil de compania
+        - ❌ Candidate Experience
+- Jobs
+    - Listar jobs (en estado publicado)
+- My Applications
+    - Assesments
+    - Ver feedback - Cómo se calcula❓
+    - Agendar una entrevista 
+- Interview Schedule
+    - Ver mi agenda   
+- Notificaciones 
+    - Se notificará antes los cambios de estados definidos 
+
+Admin
+- Home 
+    - My assigned Jobs
+- Job Seekers
+    - Analytics
+    - Ver listado de usuarios
+    - Ver perfil ❓/candidate-action-timeline
+- Employers 
+    - Ver listado y estado de las companías (Borrador, revisión y publicado)
+    - Cargar compañias (Employer Role)
+    - Perfil público
+        - Overview     
+    - Hiring Insights & Performance    
+- Job Managment
+    - Ver listado de ofertas de trabajo y estados
+    - Cargar oferta de trabajo
+    - Configurar assesment
+- Applicant Managment 
+    - Grid y Kanban
+    - Review Application 
+    - Provide Update (aceptar o rechazar + feedback)
+    - View Assesment Detail 
+    - View History
+
+------------------------------------------------------------
+
+❌ Chat interno - Dejar para siguiente release 
+-- o considerar limitarlo a mensajes entre usuarios
+❌ My Profile - References 
+❌ Cuestionarios del perfil vengan precargados por base 
+❌ Employers - Perfil público 
+    - Employee testimonials & Candidate Feedback
+    - Candidate Experience
+
+------------------------------------------------------------
+- Reglas de evaluación 

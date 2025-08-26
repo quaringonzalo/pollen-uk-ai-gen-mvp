@@ -178,9 +178,7 @@ export default function Layout({ children }: LayoutProps) {
   // Handle logout for sidebar
   const handleLogout = async () => {
     try {
-      await apiRequest('/api/logout', { 
-        method: 'POST' 
-      } as RequestInit);
+      await apiRequest('/api/logout', "POST");
       window.location.href = '/';
     } catch (error) {
       console.error('Logout failed:', error);

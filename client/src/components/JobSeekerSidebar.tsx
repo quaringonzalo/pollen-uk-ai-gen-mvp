@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { badgeVariants } from './ui/badge';
 
 interface JobSeekerSidebarProps {
   onLogout: () => void;
@@ -12,16 +13,13 @@ export function JobSeekerSidebar({ onLogout }: JobSeekerSidebarProps) {
   const [location, setLocation] = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-
-
-
-
   const navigationItems = [
     {
       icon: Home,
       label: 'Home',
       path: '/home',
-      isActive: location === '/home' || location === '/'
+      isActive: location === '/home' || location === '/',
+      badge: 1
     },
     {
       icon: Briefcase,

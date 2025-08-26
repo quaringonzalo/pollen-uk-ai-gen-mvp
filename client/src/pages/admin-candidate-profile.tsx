@@ -13,8 +13,148 @@ import {
   ChevronDown, ChevronRight, ExternalLink, Phone, AlertCircle
 } from "lucide-react";
 
+// Mock data for candidate
+const mockCandidate: CandidateDetail = {
+  id: 123,
+  name: "Emma Davis",
+  firstName: "Emma",
+  lastName: "Davis",
+  email: "emma.davis@example.com",
+  location: "Manchester, UK",
+  profileImageUrl: "https://randomuser.me/api/portraits/women/23.jpg",
+  matchScore: 92,
+  status: "shortlisted",
+  challengeScore: 87,
+  appliedDate: "2025-07-15T14:30:00Z",
+  availability: "Available immediately",
+  behavioralType: "Social Butterfly",
+  behavioralSummary: "Enthusiastic team player with excellent communication skills and creative problem-solving abilities.",
+  discProfile: {
+    red: 25,
+    yellow: 68,
+    green: 42,
+    blue: 35
+  },
+  personalStory: {
+    perfectJob: "A role that allows me to collaborate with diverse teams, exercise creativity, and make a meaningful impact on projects while constantly learning and growing.",
+    friendDescriptions: ["Energetic", "Supportive", "Resourceful", "Persuasive", "Optimistic"],
+    teacherDescriptions: ["Creative", "Talkative", "Engaging", "Enthusiastic"],
+    happyActivities: [
+      "Collaborating with a team on creative projects",
+      "Presenting ideas and getting immediate feedback",
+      "Helping others solve problems or learn new skills",
+      "Working in a fast-paced, dynamic environment"
+    ],
+    frustrations: [
+      "Repetitive tasks with little variety",
+      "Isolated work with minimal team interaction",
+      "Rigid processes that limit creativity"
+    ],
+    proudMoments: [
+      "Led a student marketing campaign that increased event attendance by 45%",
+      "Created an innovative approach to customer feedback that was adopted company-wide",
+      "Mediated a team conflict that resulted in improved collaboration"
+    ]
+  },
+  interests: {
+    roleTypes: ["Marketing", "Customer Experience", "Creative Design", "Project Management"],
+    industries: ["Technology", "Education", "Sustainability", "Media"],
+    courseInterests: ["Digital Marketing", "Design Thinking", "Communication"]
+  },
+  keyStrengths: [
+    {
+      title: "Relationship Building",
+      description: "Naturally connects with people and builds rapport quickly, making her excellent at establishing positive client and team relationships.",
+      color: "pink"
+    },
+    {
+      title: "Persuasive Communication",
+      description: "Articulates ideas clearly and convincingly, with an ability to adapt communication style to different audiences.",
+      color: "purple"
+    },
+    {
+      title: "Creative Problem Solving",
+      description: "Approaches challenges with innovative thinking and generates unique solutions by connecting seemingly unrelated ideas.",
+      color: "blue"
+    },
+    {
+      title: "Team Motivation",
+      description: "Inspires enthusiasm in teammates and creates positive energy that helps teams overcome obstacles.",
+      color: "amber"
+    }
+  ],
+  proactivityScore: "8.5",
+  assessmentCompleted: true,
+  visaStatus: "UK Citizen - Full right to work",
+  interviewSupport: "Standard interview preparation and feedback provided",
+  pollenAssessment: {
+    overallAssessment: "Emma demonstrates exceptional communication skills and creative thinking. She connects naturally with others and brings positive energy to teams. Her enthusiasm for learning new things and ability to adapt quickly make her well-suited for dynamic roles requiring interpersonal skills. She may benefit from developing more structured approaches to task management and detail orientation.",
+    interviewPerformance: {
+      overallScore: 88,
+      communicationRapport: "Excellent",
+      roleUnderstanding: "Very Good",
+      valuesAlignment: "Strong",
+      notes: "Emma showed great enthusiasm and connected well during the interview. She articulated her experiences clearly and asked thoughtful questions about the role and company culture. Her natural communication skills were evident, and she demonstrated good understanding of how her strengths would contribute to the position."
+    }
+  },
+  skillsAssessment: {
+    overallScore: 84,
+    assessments: [
+      {
+        name: "Digital Marketing",
+        score: 91,
+        description: "Exceptional understanding of social media platforms, content strategy, and audience engagement tactics with practical implementation experience."
+      },
+      {
+        name: "Customer Experience Design",
+        score: 85,
+        description: "Strong grasp of customer journey mapping and experience optimization with evidence of applying these concepts in previous projects."
+      },
+      {
+        name: "Project Coordination",
+        score: 78,
+        description: "Good foundation in project management principles with some experience in coordinating team activities and tracking deliverables."
+      },
+      {
+        name: "Data Analysis",
+        score: 72,
+        description: "Basic understanding of analytics tools and data interpretation, with room for growth in applying insights to strategic planning."
+      }
+    ]
+  },
+  workExperience: [
+    {
+      role: "Marketing Assistant",
+      company: "CreativeMinds Agency",
+      duration: "Jan 2024 - Present",
+      description: "Assisted with social media campaigns, created content for various platforms, and supported the team with client presentations and reporting."
+    },
+    {
+      role: "Customer Experience Intern",
+      company: "TechSolutions Ltd",
+      duration: "Summer 2023",
+      description: "Analyzed customer feedback, suggested improvements to customer journey, and assisted with implementing changes to the onboarding process."
+    }
+  ],
+  references: [
+    {
+      name: "Dr. Sarah Johnson",
+      title: "Marketing Professor, Manchester University",
+      email: "s.johnson@manchester.edu",
+      testimonial: "Emma was one of the most engaged students I've taught. She consistently demonstrated creativity in her projects and had a natural ability to lead group discussions and team projects. Her enthusiasm was contagious."
+    },
+    {
+      name: "Michael Thompson",
+      title: "Marketing Director, CreativeMinds Agency",
+      email: "m.thompson@creativeminds.com",
+      testimonial: "Emma quickly became an invaluable team member during her time with us. Her ability to connect with clients and understand their needs, combined with her creative approach to problem-solving, allowed her to make significant contributions despite being early in her career."
+    }
+  ]
+};
+
 // Types for the candidate data structure - Updated to match new API
 interface CandidateDetail {
+  behavioralSummary: string;
   id: number;
   name: string;
   firstName: string;
@@ -88,13 +228,11 @@ export default function AdminCandidateProfile() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("pollen-insights");
   const [expandedSkills, setExpandedSkills] = useState<Record<string, boolean>>({});
-  const [scoresApproved, setScoresApproved] = useState(false); // Track if assessment scores are approved
+  const [scoresApproved, setScoresApproved] = useState(true); // Set to true to display skills scores
 
-  // Fetch candidate data from database
-  const { data: candidate, isLoading, error } = useQuery<CandidateDetail>({
-    queryKey: [`/api/admin/candidates/${candidateId}`],
-  });
-
+  // Use the mock candidate data
+  const candidate: CandidateDetail = mockCandidate;
+  
   // Dynamic stage checking functions
   const hasPollenInterview = (candidate: CandidateDetail) => {
     return candidate?.pollenAssessment?.overallAssessment || candidate?.pollenAssessment?.interviewPerformance;
@@ -106,8 +244,6 @@ export default function AdminCandidateProfile() {
 
   // Dynamic tab determination based on candidate status
   const getAvailableTabs = () => {
-    if (!candidate) return ["profile"];
-    
     const tabs = [];
     
     // Always show Pollen Team Insights tab (will show empty state if no interview)
@@ -129,36 +265,6 @@ export default function AdminCandidateProfile() {
     }));
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading candidate profile...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !candidate) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-500 mb-4">
-            Error loading candidate profile
-            {candidateId && (
-              <div className="text-sm text-gray-600 mt-2">
-                Candidate ID {candidateId} not found. Try candidates 20, 21, 22, or 23.
-              </div>
-            )}
-          </div>
-          <Button onClick={() => setLocation('/admin/job-applicants-grid/1')}>
-            Return to Dashboard
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   const availableTabs = getAvailableTabs();
   
